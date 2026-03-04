@@ -2,6 +2,14 @@
 
 \newif\ifsol
 \soltrue
+\usepackage{amsthm}
+
+\theoremstyle{plain}
+\newtheorem{lemma}{Lemma} 
+
+\theoremstyle{definition}
+\newtheorem*{lem_explanation}{Lemma Proof}
+
 
 \include{macros}
 
@@ -201,7 +209,65 @@ NB: your proof will, of course, proceed via a reduction. In your reduction, be s
  \end{problem}
 
 \begin{solution}
-Your solution goes here
+To solve this question, the following lemma is be essentially to proving my point:
+
+\begin{lemma}[Random $\oplus$ Fixed]\label{lemma:rnd-xor-fixed}
+  Let $R$ be a random function, and $C$ be \textbf{any} fixed function. Then, the following equation will also be random:
+  \begin{equation*}
+    H(x) = R(x) \oplus C(x)
+  \end{equation*}
+\end{lemma}
+\begin{lem_explanation}
+  Imagine $R$ being just a rnd bit ($0$ or $1$), and $C$ was $\{1\}$. Then, $R \oplus C$ outputting $1$ only occurs $50\%$ of the time (it is random).\\
+  \indent Abstract this to an $n$-bit function for $R, C$ now. The probability of $R(x) \oplus C(x) = Z$, with $Z$ just being some
+  desired $n$-bit output, will then also be random. This proves the lemma.
+\end{lem_explanation}
+
+\subsection*{Game}
+\textit{Note:} I'll be proving the contrapositive: If $F$ is insecure, then $F_1$ is also insecure.\\
+\indent Let $\B$ is the adversary playing against $F_1$, and $\A$ be the game playing against $F$ itself. I'll only really describe $\B$ in detail, $\A$ will be described more abstractly.
+\begin{itemize}
+  \item[\textbf{A}] $\A$ chooses some $x$
+  \item $x$ gets pushed into $\B$
+  \item[\textbf{B}] $x$ gets pushed into $\text{oracle}$, producing $y = F_1(k_1, x)$
+  \item $\B$ chooses $k_2 = \{0, 1\}^n$
+  \item $\B$ calculates $z = y \oplus F_2(k_2, x)$
+  \item $\B$ returns $z$ to $\A$
+  \item[\textbf{A, B}] $\A$ determines value of $\hat{b}$ from $z$
+  \item $A, B$ returns $\hat{b}$
+\end{itemize}
+
+\subsection*{Analysis}
+I won't explicity write out the $\Pr$ equation right now. HOWEVER note that experiment $0$ denotes the psuedo-rnd experiment, and $1$ denotes the truly random experiment for BOTH $\A, \B$.
+
+\paragraph{Game 0 (For $\B$)}
+In this game, the oracle $\B$ uses is $F_1$. Note how both terms of the value that $\B$ outputs to $\A$ are deterministic, $z = F_1(k_1, x) \oplus F_2(k_2, x)$. 
+Further note how game we have just described is the exact same game as the problem asks of us. This means that the experiment $\A$ is playing then
+is it's pseudo-rnd experiment as well. As $\B$'s output is dependent on $\A$, then:
+\begin{equation*}
+  \Pr[W^{\B}_0] = \Pr[W^{\A}_0]
+\end{equation*}
+
+\paragraph{Game 1 ($\B$)}
+In this game, the orcle $\B$ now uses is just some rnd func. Now note the terms that $\B$ outputs to $\A$, $z = R(x) \oplus F_2(k_2, x)$. 
+This is just \ref{lemma:rnd-xor-fixed}, which means that $z$ is a random value. That then means that the game $\A$ will play will then be its rnd experiment.
+Thus:
+\begin{equation*}
+  \Pr[W^{\B}_1] = \Pr[W^{\A}_1]
+\end{equation*}
+
+\subsection*{Adv}
+The advantage for game $\B$ can be calculated as the following:
+\begin{equation*}
+  \PRFadv[\B, F_1] = |\Pr[W^{\B}_0] - \Pr[W^{\B}_1]|
+\end{equation*}
+
+\noindent By our analysis, our probabilities are the exact same as $\A$'s probabilties:
+\begin{equation*}
+  |\Pr[W^{\B}_0] - \Pr[W^{\B}_1]| = |\Pr[W^{\A}_0] - \Pr[W^{\A}_1]| = \epsilon
+\end{equation*}
+
+\noindent As $\epsilon$ is assumed to be non-negligble (from our assumption), then this proves that $F_1$ is insecure, proving our contrapositive statement, and thus proving the OG statement. $\qed$
 \end{solution}
 
 
@@ -213,7 +279,57 @@ Your solution goes here
 \end{ppart}
 
 \begin{solution}
-Your solution goes here
+The hint does heavy lifting here. Basically this is a matter of showing how the probability of getting the `bad event' is negligble, which bounds to the overall probability of the PRF.
+
+\begin{lemma}[Difference]\label{lemma:difference}
+  Already learned it in class, so I'll just put the equation it states down here:
+  \begin{equation*}
+    |\Pr[W_0] - \Pr[W_1]| \leq \Pr[Z]
+  \end{equation*}
+\end{lemma}
+
+\subsection*{Game}
+  Define $\A$ as some abstract game that tries to distinguish $F^1$ from a truly rnd func.\\
+  
+  \noindent There are 3 total branches $\A$ could take, and it regards the oracle it uses:
+  2 from the psuedo-rnd experiment, and 1 for the truly random:
+  
+  \begin{itemize}
+    \item[Game 0] $F^1$ is run
+    \item[Game 1] $F$ is run
+    \item[Game 2] A rnd func is run  
+  \end{itemize}
+
+\subsection*{Analysis}
+Denote $\PRFadv[\A, F] = |\Pr[W_0] - \Pr[W_1] - \Pr[W_2]|$ as the magnitude of probability difference of either game 0, 1, or 2 of occuring. By the triangle inequality,
+this entire equation is bounded to the following expression:
+\begin{equation*}
+  \PRFadv[\A, F] \leq |\Pr[W_0] - \Pr[W_1]| + |\Pr[W_1] - \Pr[W_2]|
+\end{equation*}
+\noindent We can now analyze these 2 terms.
+
+\paragraph{Game 0 $\to$ Game 1} Note how the literal difference in what $\A$ does between Game 0 and Game 1 is the exact same, EXCEPT when $k = 0^{\lambda}$.
+Denote the event of this occuring as event $\Z$. Then, by \ref{lemma:difference}, the expression $|\Pr[W_0] - \Pr[W_1]|$ is bounded to $\Pr[\Z]$. 
+Event $\Z$ only occurs when 1 particular element in $\K$ occurs (that is, $0^{\lambda}$). So then:
+\begin{equation*}
+  |\Pr[W_0] - \Pr[W_1]| \leq \Pr[\Z] \leq \frac{1}{2^{\lambda}}
+\end{equation*}
+
+\paragraph{Game 1 $\to$ Game 2} Game 1 is assumed to be secure. Game 2 uses a rnd oracle, so the output is uniform and rnd to any possible check $\A$ could do.
+These are just 2 negligibles:
+\begin{equation*}
+  |\Pr[W_1] - \Pr[W_2]| <= \text{negligible}(\lambda)
+\end{equation*}
+
+\subsection*{Adv}
+So then, the overall advantage of this question becomes bounded to the following:
+
+\begin{equation*}
+  \PRFadv[\A, F] \leq |\frac{1}{2^{\lambda}}| + |\text{negligible}(\lambda)|
+\end{equation*}
+
+\noindent Subtracting 2 negligibles still results in negligible. Thus, $F$ is secure. $\qed$
+
 \end{solution}
 
 
@@ -222,7 +338,40 @@ Use the previous part to prove the following.  Let $H:\K\times \X \rightarrow \Y
  
  \end{ppart}
 \begin{solution}
-Your solution goes here
+The issue here becomes two-fold. Firstly, we're using the input (smth the Adversary CAN control) as a conditional within the PRF.
+Next is the weakness to the key, $k$. That weakness becomes visible here.
+
+\subsection*{Game}
+Let $\A$ be the adversary distinguishing $H'$ from a rnd func.
+
+\begin{itemize}
+  \item $\A$ chooses $x' \in \{0\}^{\lambda}$
+  \item Push $(k', x') \to \text{Oracle} \to y \in \{0, 1\}^{\lambda}$
+  \item Check now if $y == x'$. This is setting $\hat{b}$
+  \begin{itemize}
+    \item YES $\to$ 1
+    \item NO $\to$ 0
+  \end{itemize}
+  \item Return $\hat{b}$ from $\A$
+\end{itemize}
+
+\subsection*{Analysis}
+Let $\PRFadv[\A, H'] = |\Pr[W_1] - \Pr[W_2]|$ be the magnitude of difference between events $0, 1$ from outputting 1 from $\A$.
+
+\paragraph{Game 0}  In this game, the oracle used is $H'(k', x') \to H(x', k')$. Note how the key here is now the input, $x'$, which the adversary set as $\{0\}^{\lambda}$.
+By definition of $H(k, x)$, this then means that $y$ must also then be $0^{\lambda}$. Thus $\Pr[W_0] = 1$
+
+\paragraph{Game 1}  In this game, a rnd func is used by oracle. As the outputs' bits are independent to the input, the probability is just $\frac{1}{2^{\lambda}}$.
+
+\subsection*{Adv}
+Thus the advantage is the following:
+
+\begin{equation*}
+  \PRFadv[\A, H'] = |1 - \frac{1}{2^{\lambda}}| \approx 1
+\end{equation*}
+
+\noindent A negligible minus a non-negligible is non-negligible (the difference is a const). Also, $\frac{1}{2^{\lambda}}$ approaches negligible as $\lambda$ increases.
+Therefore, this proves that $H'$ is insecure. $\qed$
 \end{solution}
  
 \end{problem} 
@@ -255,7 +404,160 @@ The two definitions are equivalent; this equivalence is shown in Section 2.2.5 i
 \end{problem}
 
 \begin{solution}
-Your solution goes here
-\end{solution}
+\section*{A, $\CPAadv$}
+The solution to part (a) of this question simply involves creating a reduction between $\AltCPAadv, \CPAadv$. In this case, $\A =$ the Alt-CPA fighter.
+The goal is to make $\B$, the CPA fighter, perfectly simulate $\A$. \\
 
+\noindent We try to solve the contrapositive: If $\E$ isn't Alt-CPA secure, then $\E$ isn't CPA secure.
+
+\subsection*{Game}
+Let $\A$ be the adversary fighting the Alt-CPA adversary. $\B$ is the adversary fighting the CPA adversary. $\A$ runs within $\B$.\\
+
+\noindent Firstly, I'll describe $\A$:
+\begin{itemize}
+  \item IF $\A$ decides to run an enc query:
+  \begin{itemize}
+    \item $\A$ chooses $m \in \M$
+    \item Pushes $m \to \text{Oracle}$
+    \item Gets $c \in \Enc(k, m)$
+    \item This whole loop can be run multiple times
+  \end{itemize}
+  \item IF $\A$ decides to run a test query:
+  \begin{itemize}
+    \item $\A$ chooses $m_1, m_2 \in \M$
+    \item Pushes $(m_1, m_2) \to \text{Oracle}$
+    \item Gets $c \in \Enc(k, m_b)$
+    \item Can only be run once
+  \end{itemize}
+  \item Determines and returns $\hat{b}$
+\end{itemize}
+
+\noindent Note that, for $\A$, the oracle will ALWAYS be $\B$ here. Now, for the $\B$ game:
+\begin{itemize}
+  \item Gets $\text{query}$ from challenger.
+  \item IF $\text{query} = m$ (a single var):
+  \begin{itemize}
+    \item Sends $(m, m) \to \text{oracle}$
+    \item Gets $\Enc(k, m)$
+    \item Sends $\Enc(k, m) \to$ challenger
+  \end{itemize}
+  \item IF $\text{query} = (m_1, m_2)$ (2-var tuple):
+  \begin{itemize}
+    \item Sends $(m_1, m_2) \to \text{oracle}$
+    \item Gets $\Enc(k, m_b)$
+    \item Sends $\Enc(k, m_b) \to$ challenger
+  \end{itemize}
+\end{itemize}
+
+\noindent Note, $\text{oracle}$ for $\B$ is the CPA oracle, and $\text{challenger}$ is $\A$. Once $\A$ determines and returns $\hat{b}$, $\B$ returns the same value.
+
+\subsection*{Analysis}
+Let $\CPAadv[\B, \E] = |\Pr[W^{\B}_0] - \Pr[W^{\B}_1]|$ be the magnitude of difference of events $0, 1$ occuring within $\B$. \\
+
+\noindent Also, let $\AltCPAadv[\A, \E] = |\Pr[W^{\A}_0] - \Pr[W^{\A}_1] = 2 \times \AltCPAadv^*[\A, \E]$ be the same for $\A$. As $\AltCPAadv^*$ is the bit-guessing advantage,
+the distinguishing advantage is just half of that. For simplicity, let our inital assumption of that non-negligble advantage, $\epsilon$, be the advatange of
+$\AltCPAadv$, not $\AltCPAadv^*$.
+
+\paragraph{Game 0: CPA Oracle encrypts left} In the game, the $\text{oracle}$ $\B$ interacts with encrypts $m_0$. Consider the two cases of queries $\B$ could get:
+\begin{itemize}
+  \item[$m$] If $\A$ does an enc test, then $\B$ gets and sends $\Enc(m)$. Note how there's no difference between the bits from $\B$'s input, $(m, m)$. Thus, what $\A$
+  gets from $\B$ is just the same as what $\B$ got. This is just game $\A$'s enc query.
+  \item[$(m, m)$] In this case, now $\B$ gets $\Enc(m_0)$. Note how $\B$ sends this output as input to $\A$. This is just game $\A$'s test query.
+\end{itemize}
+\noindent Thus, the probability distribution of this event will be the same as what would also occur for game $\A$: $\Pr[W^{\B}_0] = \Pr[W^{\A}_0]$
+
+\paragraph{Game 1: CPA Oracle encrypts right} In the game, the $\text{oracle}$ $\B$ interacts with encrypts $m_1$. Consider the two cases of queries $\B$ could get:
+\begin{itemize}
+  \item[$m$] If $\A$ does an enc test, then $\B$ gets and sends $\Enc(m)$. Like before, there's no difference between the outputs of $m, m$, they're the same.
+  Thus, this is just game as $\A$'s enc query.
+  \item[$(m, m)$] In this case, now $\B$ gets $\Enc(m_1)$. Note how $\B$ sends this output as input to $\A$. This is just game $\A$'s test query.
+\end{itemize}
+\noindent Same conclusion as before, just for Game 1 now: $\Pr[W^{\B}_1] = \Pr[W^{\A}_1]$
+
+\subsection*{Adv}
+Thus, the advantage for the CPA game is as follows:
+\begin{equation*}
+  \begin{aligned}
+    \CPAadv &= |\Pr[W^{\B}_0] - \Pr[W^{\B}_1]|\\
+    &= |\Pr[W^{\A}_0] - \Pr[W^{\A}_1]|\\
+    &= \AltCPAadv[\A, \E]\\
+    &= \epsilon
+  \end{aligned}
+\end{equation*}
+
+\noindent Our assumpution assumed $\epsilon$ is non-negligble. Thus, $\CPAadv$ is non-negligible.\\
+
+\noindent This proves the contrapositive, and thus the OG statement. $\qed$
+
+\section*{B, $\AltCPAadv$}
+This proof requires doing a bunch of hybrid arguments. The reason for this is because of what this question really is asking versus the previous one.
+The previosu question was proving the equivalence of 2 different definitions. But here, I'm forced to now check if $\AltCPAadv$'s mechanism of single-query
+is just as secure as the  standard $\CPAadv$ multi-query test.\\
+
+\noindent I will prove the contrapositive: If $\E$ is \textbf{not} CPA-secure, then $\E$ is \textbf{not} Alt-CPA-secure.
+
+
+\subsection*{Hybrid Games}
+Let $\A$ be the adversary, that can make $Q$ test queries, and is assumed to have non-negligible advantage $\epsilon$ against $\E$. 
+Now let $\B$ be the adversary, that can only make 1 query, that uses $\A$ to break Alt-CPA security.\\
+
+\noindent Also, let $Q+1$ be defined as the hybrid games $H_0, H_1, \ldots, H_Q$. It is polynomially bounded:
+\begin{itemize}
+    \item \textbf{Hybrid $H_0$:} All $Q$ test queries use $b=0$ (encrypt $m_0^{(i)}$ for all $i$)
+    \item \textbf{Hybrid $H_1$:} First query uses $b=1$, remaining $Q-1$ queries use $b=0$
+    \item \textbf{Hybrid $H_2$:} First 2 queries use $b=1$, remaining $Q-2$ queries use $b=0$
+    \item $\ldots$
+    \item \textbf{Hybrid $H_Q$:} All $Q$ test queries use $b=1$ (encrypt $m_1^{(i)}$ for all $i$)
+\end{itemize}
+
+Note how $H_0$ corresponds to Experiment 0 of the CPA game, and how $H_Q$ corresponds to Experiment 1 of the CPA game.
+
+\subsection*{Adversary}
+$\B$ is now playing against the Alt-CPA game, and works as the CPA game's oracle within $\A$:
+\begin{itemize}
+    \item $\B$ chooses a random value $\omega \in \{1, \ldots, Q\}$
+    \item When $\A$ makes its $i$-th test query $(m_0^{(i)}, m_1^{(i)})$:
+    \begin{itemize}
+        \item If $i < \omega$: $\B$ encrypts $m_1^{(i)}$ using its $\text{oracle}$ via an enc query
+        \item If $i > \omega$: $\B$ will encrypt $m_0^{(i)}$ with $\text{oracle}$ via an enc query
+        \item If $i = \omega$: $\B$ will finally send $(m_0^{(i)}, m_1^{(i)})$ to $\text{oracle}$ as a test query, get $c^*$, and send that to $\A$
+    \end{itemize}
+    \item $\B$ returns whatever $\A$ outputs as $\hat{b}$
+\end{itemize}
+
+\subsection*{Analysis}
+Let $W_i$ be the event that $\A$ outputs 1 in the (hybrid) game $H_i$.
+
+\paragraph{Case 1: $\B$'s oracle uses $b=0$}
+When the Alt-CPA oracle encrypts $m_0^{(\omega)}$, note how $\B$'s game just becomes $H_{\omega-1}$ (as the first $\omega-1$ queries use $b=1$, while the rest use $b=0$).
+
+\paragraph{Case 2: $\B$'s oracle uses $b=1$}
+When the Alt-CPA oracle encrypts $m_1^{(\omega)}$, then this is just $H_{\omega}$ (the first $\omega$ queries use $b=1$, rest use $b=0$).
+
+\subsection*{Adv}
+The advantage of $\B$ against Alt-CPA thus is:
+\begin{equation*}
+\AltCPAadv[\B, \E] = \left|\Pr[\hat{b} = b] - \frac{1}{2}\right|
+\end{equation*}
+
+\noindent And since $\omega$ is independent and random from $\{1, \ldots, Q\}$:
+\begin{equation*}
+\AltCPAadv[\B, \E] \leq \frac{1}{Q} \sum_{i=1}^{Q} \left|\Pr[W_i] - \Pr[W_{i-1}]\right|
+\end{equation*}
+
+\noindent By the triangle inequality:
+\begin{equation*}
+\CPAadv[\A, \E] = \left|\Pr[W_Q] - \Pr[W_0]\right| \leq \sum_{i=1}^{Q} \left|\Pr[W_i] - \Pr[W_{i-1}]\right|
+\end{equation*}
+
+\noindent And therefore:
+\begin{equation*}
+\AltCPAadv[\B, \E] \geq \frac{1}{Q} \times \CPAadv[\A, \E]
+\end{equation*}
+
+\noindent Our initial assumption tells us that $\CPAadv$ will have some non-negligible value.
+Since $Q$ is polynomially bounded (furthermore, it's $\frac{1}{Q}$, an inverse polynomial), that also then means that that product will still be non-negligible.\\
+
+\noindent This then proves that $\AltCPAadv$ is non-negligible, and insecure. This proves the contrapositive, which proves our OG statment. $\qed$
+\end{solution}
 \end{document}
