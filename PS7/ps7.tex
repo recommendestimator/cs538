@@ -29,7 +29,63 @@ Show that this MAC system is insecure.
 \end{problem} 
   
 \begin{solution}
-Your solution goes here
+The main issue with this MAC setup is primarily the way $F$ is setup in this system. Basically, the MAC reveals info about the hidden values to the adversary. 
+This can then be computed by the adversary to make up a new valid MAC.
+
+\subsection*{Game}
+Let $\A$ be the efficent adv. attacking the MAC protocol. We are trying to make a game, such that the challenger outputs $\{V(k, \cdot, (\cdot, \cdot)) \rightarrow \text{ACCEPT}\}$ from $\A$'s input,
+when it shouldn't.
+
+\begin{itemize}
+    \item Challenger gives $\A$ access to the following Oracles:
+    \begin{itemize}
+        \item $S(k, \cdot)$
+        \item $V(k, \cdot, (\cdot, \cdot))$
+    \end{itemize}
+    \item $\A$ chooses rnd $m_1 \in M$.
+    \item $\A$ querys $S(k, m_1)$, recieves $(r_1, t_1)$.
+    \item $\A$ now chooses rnd $m_2 \in M \backslash m_1$.
+    \item $\A$ computes $t_2 = (t_1 \oplus \text{CRC32}(m_1)) \oplus \text{CRC32}(m_2)$
+    \item $\A$ queries $V(m_2, (r_1, t_2))$, gets $\{\text{ACCEPT, REJECT}\}$.
+\end{itemize}
+
+\subsection*{Analysis}
+I'm calculating $\text{CMAadv}[\A, \text{MAC}] = |\Pr[W_0] - \Pr[W_1]|$, where $Pr[W_b]$ is just the chance that the game will output $\text{ACCEPT}$ in a particular game.
+
+\paragraph{Game 0 (rnd)} In this game, $S(k, \cdot)$ just outputs a rnd value $\in \{0, 1\}^{32}$. So the chances $V$ will actually work is just $2^{32}$. This is negligible.
+
+\paragraph{Game 1} Now we are analyzing the constructed game. Note what $\A$ recieves upon first query, $(r_1, t_1)$. $\A$ knows that $t_1 = F(k, r_1) \oplus \text{CRC32}(m_1)$. So then,
+$F(k, r_1) = t_1 \oplus \text{CRC32}(m_1)$. Then it is possible to calculate: 
+
+\begin{equation*}
+    \begin{aligned}
+        t_2 &= (t_1 \oplus \text{CRC32}(m_1)) \oplus \text{CRC32}(m_2)\\
+        &= F(k, r_1) \oplus \text{CRC32}(m_2)
+    \end{aligned}
+\end{equation*}
+
+\noindent Note how $V$ operates. If $\A$ were to now query the challenger with $(m_2, (r_1, t_2))$, $V$ is now checking if:
+
+\begin{equation*}
+    \begin{aligned}
+        t_2 &= F(k, r_1) \oplus \text{CRC32}(m_2)\\
+        F(k, r_1) \oplus \text{CRC32}(m_2) &= F(k, r_1) \oplus \text{CRC32}(m_2)
+    \end{aligned}
+\end{equation*}
+
+\noindent As both sides are exactly equal to one another, the challenger will always output $\text{ACCEPT}$ in this case.
+
+\subsection*{Analysis}
+Therefore, we get the following:
+\begin{equation*}
+    \begin{aligned}
+        \text{CMAadv}[\A, \text{MAC}] &= |\Pr[W_0] - \Pr[W_1]|\\
+        &= |\frac{1}{2^{32}} - 1|\\
+        &\approx 1
+    \end{aligned}
+\end{equation*}
+
+\noindent This is not negligible. Therefore this proves that the MAC protocol is insecure. $\qed$
 \end{solution}
   
   
@@ -47,7 +103,69 @@ Show that $\I$ is a MAC combiner of $\I_1$ and $\I_2$.
 \end{problem} 
   
 \begin{solution}
-Your solution goes here
+This can be proved through a reduction. Firstly, note the construction of $\I$:
+
+\begin{equation*}
+    S_1(k_1, m) \oplus S_2(k_2, m) = \I_1 \oplus \I_2
+\end{equation*}
+
+\noindent By logic and the laws of XOR, we are essentially just proving $(\I_1 \rightarrow \I) \lor (\I_2 \rightarrow \I)$. So by proving that $\I_1$ is secure, we prove $\I$ is secure.
+The proof for $\I_2$ will be the same thing.
+
+\subsection*{Game}
+Let $\A$ be the efficent adversary attacking $\I$, assumed to have some adv $\epsilon$. Then, let $\B$ be another efficent adversary, attacking $\I_1$.
+Assume the contrapositive: If $\I$ is insecure, then $\I_1$ is insecure.
+
+\begin{itemize}
+    \item $\B$ can query $S_1(k_1, \cdot)$. $\A$'s query will be intercepted by $\B$.
+    \item Before anything, $\B$ will choose rnd $k_2 \to \K_2$.
+    \begin{itemize}
+        \item $\B$ is now essentially simulating $\I_2$. This is possible, as we assume that we know how $\I_2$ works.
+    \end{itemize}
+    \item Whenever $\A$ makes a query with $m$:
+    \begin{itemize}
+        \item $\B$ forwards query to Challenger, gets $t_1 = S_1(k_1, m)$.
+        \item $\B$ then computes $t_2 = S_2(k_2, m)$.
+        \item $\B$ computes $t = t_1 \oplus t_2$.
+        \item $\B$ sends $t$ to $\A$
+    \end{itemize}
+    \item $\A$ will output some forgery $(m^*, t^*)$. $\B$ intercepts this.
+    \item $\B$ then computes:
+    \begin{itemize}
+        \item $t^*_2 = S_2(k_2, m^*)$
+        \item $t^*_1 = t^* \oplus t^*_2$
+    \end{itemize}
+    \item $\B$ returns forgery $(m^*, t^*_1)$.
+\end{itemize}
+
+\subsection*{Analysis}
+\paragraph{Validity} If $\A$ wins, by initial assumption, then $(m^*, t^*)$ is a valid forged tag. By the definition of $\I$:
+\begin{equation*}
+    t^* = S_1(k_1, m^*) \oplus S_2(k_2, m^*)
+\end{equation*}
+
+\noindent Therefore what $\B$ computes is then:
+\begin{equation*}
+    \begin{aligned}
+        t^*_1 &= t^* \oplus S_2(k_2, m^*)\\
+        &= (S_1(k_1, m^*) \oplus S_2(k_2, m^*)) \oplus S_2(k_2, m^*)\\
+        &= S_1(k_1, m^*)
+    \end{aligned}
+\end{equation*}
+
+\noindent By the initial assumption, this means that $\B$'s forgery will also then be valid.
+
+\paragraph{Freshness} If $\A$ wins, $m^*$ is never sent to $\I$. $\B$ always forwards $\A$'s queries to $\I_1$. Therefore, if $\A$ has won, then $\B$ hasn't
+sent any new message $m^*$ to $\I_1$. Therefore $\B$'s forgery is a valid existential tag for $\I_1$.
+
+\subsection*{End}
+Since, when $\A$ wins, $\B$ also wins, the advantage of $\B$ will be at least that of $\A$:
+\begin{equation*}
+    \MACadv[\B, \I_1] \geq \MACadv[\A, \I] 
+\end{equation*}
+
+\noindent By our initial assumption, then $\B$ will therefore then be non-negligible. This proves the contrapositive, therefore proving the OG statement. $\qed$
+
 \end{solution}
 
 \ifsol\else\newpage\fi
