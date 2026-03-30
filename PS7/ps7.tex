@@ -1,0 +1,98 @@
+\documentclass[12pt]{article}
+
+\newif\ifsol
+\soltrue
+
+\include{macros}
+
+\begin{document}
+\begin{center}
+\Large{\textbf{CAS CS 538.  \ifsol Solutions to \fi Problem Set 7}}\\
+\smallskip
+\large{\textbf{Due electronically via Gradescope, Monday March 30, 2026 11:59pm
+}}
+\end{center}
+
+\noindent
+ 
+
+\begin{problem} (25 points)
+Consider the following MAC (a variant of this was used for Wi\nobreakdash-Fi encryption in 802.11b WEP).
+Let $F$ be a PRF defined over $(\K, \R, \X)$ where $\X := \{0, 1\}^{32}$.
+Let CRC32 be any efficiently computable function mapping $m \in \{0, 1\}^{\le \ell}$ to a 32-bit string (in 802.11b, it was a simple and popular error-detecting code meant to detect random errors).
+Define the following MAC system $(S, V)$:
+\begin{align*}
+	S(k, m) &:= \left\{r \samples \R, t \gets F(k, r) \oplus \text{CRC32}(m), \text{output }(r, t)\right\}, \\
+	V(k, m, (r, t)) &:= \left\{\textsf{accept}\text{ if }t = F(k, r) \oplus \text{CRC32}(m)\text{ and }\textsf{reject}\text{ otherwise}\right\}.
+\end{align*}
+Show that this MAC system is insecure.
+\end{problem} 
+  
+\begin{solution}
+Your solution goes here
+\end{solution}
+  
+  
+\begin{problem} (30 points)
+We want to build a MAC system $\I$ using two MAC system $\I_1 = (S_1, V_1)$ and $\I_2 = (S_2, V_2)$, so that if at some time one of $\I_1$ or $\I_2$ is broken (but not both) then $\I$ is still secure.
+Put another way, we want to construct $\I$ from $\I_1$ and $\I_2$ such that $\I$ is secure if either $\I_1$ or $\I_2$ is secure.
+This is also called a \emph{MAC combiner}.
+
+For this problem, suppose that $\I_1$ and $\I_2$ are deterministic MAC systems (see the definition on textbook page 217 in Section 6.1), and that both have tag space $\{0, 1\}^n$.
+Define the deterministic MAC system $\I = (S, V)$, where
+\[
+	S((k_1, k_2), m) := S_1(k_1, m) \oplus S_2(k_2, m).
+\]
+Show that $\I$ is a MAC combiner of $\I_1$ and $\I_2$.
+\end{problem} 
+  
+\begin{solution}
+Your solution goes here
+\end{solution}
+
+\ifsol\else\newpage\fi
+
+\begin{problem} (45 points)
+For this problem, it may be helpful to review discussion 7 and section 9.4.2 in the textbook.
+
+    Consider the following candidate authenticated encryption scheme. The idea is to apply a MAC to a plaintext, add a checksum value to detect decryption errors\footnote{Of course, verifying the MAC also suffices to detect decryption errors. Adding the checksum is an attempt at redundancy.}, and then encrypt the plaintext, MAC, and checksum value together.
+
+    Let $\E=(E,D)$ be a block cipher with  $\M = \K = \C = \left\{0,1 \right\}^{128}$, and $\I=(S,V)$ be a MAC with tag space $\left\{0,1 \right\}^{128}$. For the checksum, we'll use a function $\checksum : \left\{0,1 \right\}^* \to \left\{0,1 \right\}^{8}$ that outputs a one-byte tag. 
+
+    Define the scheme $\E'  = (E',D')$ as follows:
+
+    \begin{figure}[h!]
+        \center
+        \begin{subfigure}{0.45\linewidth}
+            \titlecodebox{$E'((k_e, k_m), m)$: }{
+                $t \gets S(k_m, m)$\\
+                $x \gets \checksum(m \| t) $\\
+                $c \gets $  encryption of $m \| t \| x \| 0^{120} $ under $k_e$, \\
+                \> using $E$ in randomized CBC mode\\
+                Return $c$
+            }
+        \end{subfigure}
+        \begin{subfigure}{0.45\linewidth}
+            \titlecodebox{$D'((k_e,k_m), c)$}{
+                $(m \| t \| x\| 0^{120}) \gets $ decryption of $c$ under $k_e$, \\
+                \> using $D$ in randomized CBC mode\\
+                If $x \neq \checksum(m \| t)$:\\
+                \> Output \textsf{reject}\\
+                Elif $V(k_m, m, t) = \textsf{reject}:$ \\
+                \> Output \textsf{reject}\\
+                Else:\\
+                \> Output $m$
+            }
+        \end{subfigure}
+    \end{figure}
+
+Notice that $E'$ pads the plaintext with 120 bits of zeros. You may assume that all message sizes are multiples of 128 bits. This ensures that the second-to-last block of every ciphertext is an encryption of the tag, and the last block is an encryption of the checksum followed by 120 zeros.
+
+Prove that $\E'$ is not AE-secure.
+\end{problem}
+
+\begin{solution}
+Your solution goes here
+\end{solution}
+
+\end{document}
