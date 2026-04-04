@@ -1,0 +1,263 @@
+\documentclass[12pt]{article}
+
+\newif\ifsol
+\soltrue
+
+% Unicode compatibility
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[noTeX]{mmap}
+  \usepackage[T1]{fontenc}
+\fi
+% XeTeX does not support mmap
+\ifLuaTeX
+  \usepackage{luatex85}
+  \usepackage[noTeX]{mmap}
+\fi
+
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{7.1in}
+\setlength{\evensidemargin}{-0.2in}
+\setlength{\oddsidemargin}{-0.2in}
+\setlength{\headsep}{30pt}
+\setlength{\topmargin}{-0.3in}
+
+\usepackage{amsthm,amsfonts,amsmath,xspace,tikz,varwidth,cancel,soul}
+\usepackage{hyperref,verbatim}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\newcommand{\addmedskip}{\addvspace{\medskipamount}}
+
+\newcommand{\addbigskip}{\addvspace{\bigskipamount}}
+
+\pagestyle{myheadings}
+\markboth{BU CAS CS 538.}{BU CAS CS 538.} 
+\newcounter{problemnum}
+\setcounter{problemnum}{0}
+\newenvironment{problem}
+     {\addbigskip \setcounter{partnum}{0}
+      \noindent\stepcounter{problemnum}\textbf{Problem
+                                             \arabic{problemnum}.\ }}
+     {\par\addbigskip}
+     
+\ifsol
+\newenvironment{solution}
+     {\addbigskip
+      \noindent\color{blue}\textbf{Solution.\ }}
+     {\par\addbigskip}
+\else
+\newenvironment{solution}
+     {\comment}
+     {\endcomment}
+\fi
+
+\newcounter{partnum}
+\setcounter{partnum}{0}
+\newenvironment{ppart}
+     {\addmedskip
+      \noindent\stepcounter{partnum}\textbf{(\alph{partnum})}\ }
+     {\par\addbigskip}
+
+\newcommand{\Enc}{\mathrm{Enc}}
+\newcommand{\Dec}{\mathrm{Dec}}
+\newcommand{\pk}{\mathit{pk}}
+\newcommand{\sk}{\mathit{sk}}
+\newcommand{\qrn}{\mathit{QR}_n}
+\newcommand{\qrp}{\mathit{QR}_p}
+\newcommand{\qrpone}{\mathit{QR}_{p_1}}
+\newcommand{\qrptwo}{\mathit{QR}_{p_2}}
+\newcommand{\prg}{\mathit{J}}
+
+\newcommand{\crt}{\mathrm{crt}}
+
+
+\newcommand{\eqdef}{\buildrel{\scriptstyle{\mathit{def}}}\over{=}}
+\newcommand{\rfrom}{\buildrel{\scriptstyle{\mathrm{R}}}\over{\leftarrow}}
+
+\newcommand{\mbmod}{\,\%\,}
+
+\newcommand{\A}{\mathcal{A}}
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\G}{\mathbb{G}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\R}{\mathcal{R}}
+\renewcommand{\S}{\mathcal{S}}
+\newcommand{\I}{\mathcal{I}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\randk}{\mathsf k}
+\newcommand{\randm}{\mathsf m}
+\newcommand{\randc}{\mathsf c}
+\newcommand{\Adv}{\mathcal{A}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\SSadv}{\textrm{SS}\textsf{adv}}
+\newcommand{\PRGadv}{\textrm{PRG}\textsf{adv}}
+\newcommand{\threebitadv}{\textrm{3Bit}\textsf{adv}}
+\newcommand{\PRFadv}{\textrm{PRF}\textsf{adv}}
+\newcommand{\MACadv}{\textrm{MAC}\textsf{adv}}
+\newcommand{\CPAadv}{\textrm{CPA}\textsf{adv}}
+\newcommand{\BCadv}{\textrm{BC}\textsf{adv}}
+\newcommand{\CRadv}{\textrm{CR}\textsf{adv}}
+\newcommand{\DDHprimeadv}{\textrm{DDH}'\textsf{adv}}
+\newcommand{\DDHadv}{\textrm{DDH}\textsf{adv}}
+\newcommand{\DDHprime}{DDH$'$}
+
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\indist}{  \mathrel{\vcenter{\offinterlineskip
+  \hbox{$\sim$}\vskip-.35ex\hbox{$\sim$}\vskip-.35ex\hbox{$\sim$}}}}
+
+\newcommand{\samples}{\xleftarrow{R}}
+
+\newcommand{\hdl}{H_{\mathrm{dl}}}
+
+%%% BEGIN MIKE ROSULEK'S MACROS
+\newcommand{\codebox}[1]{%
+        \begin{varwidth}{\linewidth}%
+        \begin{tabbing}%
+            ~~~\=\quad\=\quad\=\quad\=\kill
+            #1
+        \end{tabbing}%
+        \end{varwidth}%
+}
+
+\newcommand{\fcodebox}[1]{%
+    \fcolorbox{black}{white}{\codebox{#1}}%
+}
+
+\newcommand{\titlecodebox}[2]{%
+    \fboxsep=0pt%
+    \fcolorbox{black}{black!10}{%
+        \begin{varwidth}{\linewidth}%
+        \centering%
+        \fboxsep=3pt%
+        \colorbox{black!10}{#1} \\
+        \colorbox{white}{\codebox{#2}}%
+        \end{varwidth}%
+    }
+}
+
+
+
+\newcommand{\link}{\diamond}
+\newcommand{\lib}[1]{\ensuremath{\L_{\textsf{#1}}}\xspace}
+\newcommand{\subname}[1]{\ensuremath{\textsc{#1}}\xspace}
+
+%%% END OF MIKE ROSULEK'S MACROS
+
+
+\begin{document}
+\begin{center}
+\Large{\textbf{CAS CS 538.  \ifsol Solutions to \fi Problem Set 8}}\\
+\smallskip
+\large{\textbf{Due electronically via Gradescope, Monday April 6, 2026 11:59pm}}//
+\large{\textbf{Om Khadka, U51801771}}
+\end{center}
+
+\noindent
+\textbf{How to submit:}  See instructions on Problem Set 1. 
+ 
+
+
+ \paragraph{Trapdoor Hash Functions.}
+
+
+ \noindent
+For this problem, we will augment collision-resistant hashing with a useful property.
+ 
+We will consider keyed collision-resistant hash functions that take a hashing key $\pk$ and two input values (which we will call $(a, b)$), and output one value. We will now augment these hash functions with an additional property: a trapdoor secret key $\sk$ that enables easy collision finding. 
+
+We formalize this property as follows. We add a key generation algorithm
+ $G$ that outputs a public hashing key $\pk$ and a trapdoor key $\sk$. There is also an efficient algorithm
+ $T$ to find collisions given $\sk$: specifically,  $T(\sk, a_1, b_1, a_2)$, outputs $b_2$ such
+ that $H(\pk, a_1, b_1)=H(\pk, a_2, b_2)$.  We still require that the hash function remains collision resistant for anyone who is given $\pk$ but not $\sk$.
+
+
+ In the next two problems you will build trapdoor hash functions. Of course, if a hash function has a trapdoor, then the person who generated the key will be able to find collisions.
+ 
+ \begin{problem} (30 points) \label{dltrapdoor}
+Recall the DL-based family in Section 8.5.1 of the textbook. Let $q$ be a Sophie Germain prime, so that $p=2q+1$ is also prime. Let  $x, y\in\qrp$ and $a, b\in \{1, 2, \dots, q\}$. The public key is $(x, y)$ and $H((x, y), a, b)=\mathrm{abs} (x^a y^b\bmod p)$, where $\mathrm{abs}(z)$ returns $z$ if $z<p/2$ and $-z$ otherwise.
+
+Show that $H$ is actually a trapdoor hash
+ family.  In other words, demonstrate an algorithm $G$ creates $\pk=(x, y)$ and some $\sk$ (your job is to figure out what $\sk$ should be), and algorithm $T$.
+ \end{problem}
+
+\begin{solution}
+Your solution goes here
+\end{solution}
+
+
+ \begin{problem}  (40 points at 10 each)
+  In this problem, we will build a collision-resistant hash function based on the hardness of factoring rather on the discrete logarithm problem. 
+ 
+ Let $q_1$ and $q_2$ be two distinct Sophie Germain primes, so that $p_1=2q_1+1$ and $p_2=2q_2+1$ are primes. Let $n=p_1 p_2$. Denote by $\qrpone$, $\qrptwo$, and $\qrn$ the groups of squares modulo $p_1$, $p_2$, and $n$, respectively. We know that $\qrpone$ and $\qrptwo$ are cyclic; thus, let $g_1\in \qrpone$ generate $\qrpone$ and $g_2\in\qrpone$ generate $\qrptwo$.
+
+ \begin{ppart}
+  Show by CRT (see notes from Discussion 8) that $\qrn$ is cyclic (the easiest way to do this is to try to construct a generator of $\qrn$ and show that it is indeed a generator by showing that its order is $q_1q_2$).  
+ \end{ppart}
+
+\begin{solution}
+Your solution goes here
+\end{solution}
+ 
+
+ \begin{ppart} 
+ Show how to efficiently factor $n$ given $q_1 q_2$. In fact, you can factor $n$ given
+ any multiple of $q_1 q_2$, but we won't show it here. Hint: treat $q_1$ and $q_2$ as unknowns. Construct a system of equations for these unknowns and solve it.
+
+
+ \begin{solution}
+Your solution goes here
+\end{solution}
+ \end{ppart}
+
+
+ \begin{ppart} 
+Let $k$ be the bit length of $n$. Let $g$ be a generator of $\qrn$. The public key for our hash function is $n$ and $g$. The inputs will be two values in the set $\{1, 2, \dots, q_1 q_2\}$. Let $H(a,b)=g^{a2^k+b}\bmod n$ (note that $a2^k+b$ is
+ just concatenation of $a$ and $b$ as bit strings).  Show that this is a
+ collision-resistant hash family under the assumption that such $n$ are hard
+ to factor. Specifically, show how, given $(a_1, b_1)$ and $(a_2, b_2)$ that
+ collide, one can factor $n$.  You may use without proof the fact that $n$
+ can be efficiently factored given any non-zero multiple of $q_1q_2$.
+ \end{ppart}
+
+ \begin{solution}
+Your solution goes here
+\end{solution}
+
+
+
+
+ \begin{ppart} 
+     Show also that this is a trapdoor hash family (like in Problem 1, you need to find what
+ trapdoor information $G$ should output and what the algorithm $T$
+ will do).
+ \end{ppart}
+
+ \begin{solution}
+Your solution goes here
+\end{solution}
+
+\end{problem}
+
+
+\begin{problem} (30 points)
+	Show how to compute the root of an $n$-leaf Merkle tree in $O(\log n)$ space.
+	More precisely, assume $n$ is a power of 2.  Given data items $x_1, x_2, \dots, x_n$ as values to be placed in the
+	leaves of the tree, and a hash function $H$, write pseudocode to compute the
+	root $r$ of the tree while never storing more than $2+\log n$
+	hash values. Analyze the storage space used by your pseudocode to prove that is never more than $2+\log n$. Note that we do not count the storage of the data items. 
+\end{problem}
+  
+\begin{solution}
+Your solution goes here
+\end{solution}
+\end{document}
