@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1775348650.95431 "/home/omimahomie/cs538/PS8/ps8.tex" "ps8.pdf" "ps8" 1775348651.54424 0
+["pdflatex"] 1775417158.67002 "/home/omimahomie/cs538/PS8/ps8.tex" "ps8.pdf" "ps8" 1775417160.15895 0
   "/etc/texmf/web2c/texmf.cnf" 1757970215.13359 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/omimahomie/cs538/PS8/ps8.tex" 1775348650.36244 13462 8852370b9a3d39cd4aad12bb70113480 ""
+  "/home/omimahomie/cs538/PS8/ps8.tex" 1775417158.11008 21826 6ca123c9222313f7dc1dc390e3075abf ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbi1440.tfm" 1136768653 3072 4dda4299ed0d9dcf48c6a8bcfdc499fc ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1136768653 3584 402da0b29eafbad07963b1224b222f18 ""
@@ -13,6 +13,7 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1440.tfm" 1136768653 3584 3169d30142b88a27d4ab0e3468e963a2 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1728.tfm" 1136768653 3584 3c76ccb63eda935a68ba65ba9da29f1a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecsl1200.tfm" 1136768653 3584 36dd7d4b521e95b0a47034c0d524f2c5 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecti1200.tfm" 1136768653 3072 8b5a64dc91775463bc95e2d818524028 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ectt1000.tfm" 1136768653 1536 06717a2b50de47d4087ac0e6cd759455 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -35,6 +36,7 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti12.tfm" 1136768653 1484 ed72f8f5cf654cda15ecc8e32bfcbee5 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti7.tfm" 1136768653 1492 86331993fe614793f5e7e755835c31c5 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti8.tfm" 1136768653 1504 1747189e0441d1c18f3ea56fafc1c480 ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1248133631 30251 6afa5cb1d0204815a708a080681d4674 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb" 1248133631 36741 fa121aac0049305630cf160b86157ee4 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb" 1248133631 37166 8ab3487cbe3ab49ebce74c29ea2418db ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1248133631 35469 70d41d2b9ea31d5d813066df7c99281c ""
@@ -188,12 +190,13 @@
   "/usr/share/texmf/fonts/type1/public/cm-super/sfbx1728.pfb" 1758300287.83332 139826 9213617a7cb78635fc326b859c0b2273 ""
   "/usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb" 1758300288.09253 136101 f533469f523533d38317ab5729d00c8a ""
   "/usr/share/texmf/fonts/type1/public/cm-super/sfsl1200.pfb" 1758300288.15919 150680 2f900f600c0f2396b35eb0b288647d6e ""
+  "/usr/share/texmf/fonts/type1/public/cm-super/sfti1200.pfb" 1758300288.27754 198221 ca5aa71411090ef358a6cc78b7458365 ""
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1758300299.77407 5312232 f3296911be9cc021788f3f879cf0a47d ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1758299484 6800788 4be6de6288c377fb30682838bc8197af ""
-  "ps8.aux" 1775348651.44961 633 c5bd025b56277ed3c3748bbfaa7f6201 "pdflatex"
-  "ps8.out" 1775348651.34022 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "ps8.tex" 1775348650.36244 13462 8852370b9a3d39cd4aad12bb70113480 ""
+  "ps8.aux" 1775417159.96253 633 f167c9ea2e11e9f9eac2a83b30d1e4a8 "pdflatex"
+  "ps8.out" 1775417159.66233 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "ps8.tex" 1775417158.11008 21826 6ca123c9222313f7dc1dc390e3075abf ""
   (generated)
   "ps8.aux"
   "ps8.log"

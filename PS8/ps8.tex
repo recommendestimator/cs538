@@ -274,7 +274,6 @@ Now for the proof that $\G, \T$ holds, I will make an adversary game, with a MIT
 \noindent This satisfies $\Y \equiv_p g^s$, therefore this is a DL challenge. $\B$ only wins when $\A$ finds a collision. Since DL is hard, $\A$'s success is neglgible.\\
 
 \noindent This proves the security of the construction of $\G, \T$. $\qed$
-
 \end{solution}
 
 
@@ -288,7 +287,28 @@ Now for the proof that $\G, \T$ holds, I will make an adversary game, with a MIT
  \end{ppart}
 
 \begin{solution}
-Your solution goes here
+This solution really involves a lot with the CRT, alongside the properties of gcd/lcm's (in relation to quadratic residues).
+
+\subsection*{Proof}
+By the Chinese Remainder Theorem (CRT), since $n = p_1 p_2$ and $\gcd(p_1, p_2) = 1$, we can actually form a ring isomorphism of the following: $\mathbb{Z}_n \equiv \mathbb{Z}_{p_1} \times \mathbb{Z}_{p_2}$. Because of this, we implicity get the quadratic residue subgroups:
+\[ \qrn \equiv \qrpone \times \qrptwo \]
+The size of $\qrpone$ is $q_1$ and similarily for $\qrptwo$, it is $q_2$. And since $q_1, q_2$ are distinct primes, $\gcd(q_1, q_2) = 1$.\\
+
+\noindent Also note, via the given $g_i$'s I'm given, and by using CRT, it is possible to create a \textbf{distinct} element, $g \in \mathbb{Z}_n^*$, that satisfies the following:
+\begin{align*}
+g &\equiv g_1 \pmod{p_1} \\
+g &\equiv g_2 \pmod{p_2}
+\end{align*}
+Since $g_1, g_2$ are quadratic residues mod their respective primes, their CRT combination, $g$, should then also be a quadratic residue $\mod n$. Thus, $g \in \qrn$.\\
+
+\noindent Via the laws of direct product groups, the order of an element is the LCM of the orders of its components:
+\[ \mathrm{ord}_n(g) = \mathrm{lcm}\left(\mathrm{ord}_{p_1}(g_1), \mathrm{ord}_{p_2}(g_2)\right) \]
+And because $g_1, g_2$ are generators, then $\mathrm{ord}_{p_1}(g_1) = |\qrpone| = q_1$ and $\mathrm{ord}_{p_2}(g_2) = |\qrptwo| = q_2$. I can sub these in to get:
+\[ \mathrm{ord}_n(g) = \mathrm{lcm}(q_1, q_2) \]
+And since $\gcd(q_1, q_2) = 1$, it is then the case that $\mathrm{lcm}(q_1, q_2) = q_1 q_2$. Therefore, $\mathrm{ord}_n(g) = q_1 q_2$.
+
+\subsection*{End}
+Because $\qrn$ has the cardinality of $|\qrpone| \cdot |\qrptwo| = q_1 q_2$, this proves how I can make an element, $g \in \qrn$, whose order = the group size. Note that this element is a generator. Thus, $\qrn$ is cyclic. $\qed$
 \end{solution}
  
 
@@ -297,10 +317,50 @@ Your solution goes here
  any multiple of $q_1 q_2$, but we won't show it here. Hint: treat $q_1$ and $q_2$ as unknowns. Construct a system of equations for these unknowns and solve it.
 
 
- \begin{solution}
-Your solution goes here
+\begin{solution}
+The solution to this involves the vars I'm given: the pub. modulus $n$, and the value $Q = q_1 q_2$. From this, I can factor $n$ out to its prime components, $p_1, p_2$.
+
+\subsection*{Deriving the System of Equations}
+Firstly, expand the definition of $n$ using the given relationship, $p_i = 2q_i + 1$:
+\begin{align*}
+n &= p_1 p_2 \\
+  &= (2q_1 + 1)(2q_2 + 1) \\
+  &= 4q_1 q_2 + 2q_1 + 2q_2 + 1 \\
+  &= 4(q_1 q_2) + 2(q_1 + q_2) + 1
+\end{align*}
+Now, let $S = q_1 + q_2$ be the sum of the unknown primes. I can sub in the known value, $Q = q_1 q_2$, into the equation, getting:
+\begin{equation*}
+n = 4Q + 2S + 1
+\end{equation*}
+Now solving for $S$:
+\begin{equation*}
+2S = n - 1 - 4Q \implies S = \frac{n - 1 - 4Q}{2}
+\end{equation*}
+
+\subsection*{Solving the Unknowns}
+This gives us a system of two equations for the two unknowns so far, $q_1, q_2$:
+\begin{enumerate}
+    \item $q_1 q_2 = Q$ (Product)
+    \item $q_1 + q_2 = S$ (Sum)
+\end{enumerate}
+Note that, if two numbers have a sum $S$ and product $Q$, then they are simply the roots of the quadratic equation:
+\begin{equation*}
+x^2 - Sx + Q = 0
+\end{equation*}
+Now it is possible to solve for $x$, using the quadratic formula:
+\begin{equation*}
+x = \frac{S \pm \sqrt{S^2 - 4Q}}{2}
+\end{equation*}
+And since $q_1, q_2$ are distinct primes, then their discriminant, $S^2 - 4Q$, should then also be positive. By computing these roots, you get $\{q_1, q_2\}$.
+
+\subsection*{End}
+Once you've computed $q_1, q_2$ , you can compute the factors of $n$ by just subbing in $q_1, q_2$ into the OG equation:
+\begin{equation*}
+p_1 = 2q_1 + 1 \quad \text{and} \quad p_2 = 2q_2 + 1
+\end{equation*}
+Since all I've done is only basic arithmetic and int square roots (which is efficient, by polynomial in $\log n$), this proves how one can efficiently factor $n$. $\qed$
 \end{solution}
- \end{ppart}
+\end{ppart}
 
 
  \begin{ppart} 
@@ -312,10 +372,37 @@ Let $k$ be the bit length of $n$. Let $g$ be a generator of $\qrn$. The public k
  can be efficiently factored given any non-zero multiple of $q_1q_2$.
  \end{ppart}
 
- \begin{solution}
-Your solution goes here
-\end{solution}
+\begin{solution}
+I can prove the OG claim with a adv. game. Let $\A$ be some eff. adv., that outputs a collision $(a_1, b_1) \neq (a_2, b_2)$ with some non-negligible probability. I can then use this collision to factor $n$.
 
+\subsection*{Getting $E$}
+By definition of a collision:
+\begin{equation*}
+H(a_1, b_1) = H(a_2, b_2) \implies g^{a_1 2^k + b_1} \equiv g^{a_2 2^k + b_2} \pmod n
+\end{equation*}
+
+\noindent Now 2(a) shows us how $g$ generates $\qrn$, and therefore how $ord_n(g) = |\qrn| = q_1 q_2$. Now note, in a cyclic group, $g^X \equiv g^Y \pmod n \iff X \equiv Y \pmod{ord_n (g)}$. Thus:
+\begin{equation*}
+a_1 2^k + b_1 \equiv a_2 2^k + b_2 \pmod{q_1 q_2}
+\end{equation*}
+Now let $\Delta a = a_1 - a_2$ and $\Delta b = b_1 - b_2$. By rearranging the yields now:
+\begin{equation*}
+\Delta a \cdot 2^k + \Delta b \equiv 0 \pmod{q_1 q_2}
+\end{equation*}
+This now implies that such an int, $E = \Delta a \cdot 2^k + \Delta b$ is a multiple of $q_1 q_2$.
+
+\subsection*{$E$ is not 0}
+Now note, the inputs satisfy $a, b \in \{1, \dots, q_1 q_2\}$, so then $|\Delta a| < q_1 q_2$ and also $|\Delta b| < q_1 q_2$. Since $k$ is the bit length of $n$, we then get $2^k > n > q_1 q_2$.\\
+\indent If $E = 0$, then $|\Delta a| \cdot 2^k = |\Delta b|$. If $\Delta a \neq 0$, the left side should be $\ge 2^k > q_1 q_2$, while the right side should be $< q_1 q_2$. This is a contradiction. Thefore $\Delta a = 0$, which then ALSO forces $\Delta b = 0$. This then form another contradiction, as $(a_1, b_1) \neq (a_2, b_2)$.\\
+\indent So then therfore, it must be the case that $E$ is a \textit{non-zero} int multiple of $q_1 q_2$.
+
+\subsection*{Factoring}
+Not, we're given that $n$ can be eff. factored, when provided with any non-0 multiple of $q_1, q_2$. Now, given $\A$'s collision, it is possible to compute $E = (a_1 - a_2)2^k + (b_1 - b_2)$, and then pass it to the factoring algorithm. This will then get the prime factors $p_1, p_2$ of $n$ with the SAME PROBABILITY that $\A$ finds a collision.
+
+\subsection*{End}
+So then, if finding collisions is non-neglibible, then it must be the case that finding $n$ should also be non-neglibible. By going back to the assumption that factoring products of distinct safe primes is hard, then the success probability of $\A$ must therefore be negligible.\\
+\indent This proves that $H$ is a collision-resistant hash family. $\qed$
+\end{solution}
 
 
 
@@ -326,7 +413,46 @@ Your solution goes here
  \end{ppart}
 
  \begin{solution}
-Your solution goes here
+The whole premesis of this solution kinda builds off of what I did in 2(c). Basically, an adv. can only break the function \textit{only if they know $q_1 q_2$}. This is equivalent to have that secret key $\sk$. I'll just prove how obtaining $\sk$ is just as hard as normally factoring $n$.\\
+
+\noindent I'll use the construction from Problem 2(c), but now with a key gen. algo., $G$, and a collision-finding algo, $T$, that uses a trapdoor.
+
+\subsection*{Functions}
+\noindent $\G()$
+\begin{itemize}
+    \item Gets rnd and unique Sophie Germain primes $q_1, q_2$, and then computes safe primes $p_1 = 2q_1+1$, $p_2 = 2q_2+1$.
+    \item Computes $n = p_1 p_2$ and the group order $Q = q_1 q_2 = \frac{(p_1-1)(p_2-1)}{4}$.
+    \item Chooses a generator $g$ of $\qrn$ (via CRT, as in 2(a)).
+    \item Now, let $k$ be the bit length of $n$.
+    \item Then, output $\pk \leftarrow (n, g)$ and $\sk \leftarrow Q$.
+\end{itemize}
+
+\noindent $\T(\sk, a_1, b_1, a_2)$:
+\begin{itemize}
+    \item Parses $\sk$ as $Q$.
+    \item Calculates $b_2 \leftarrow \left(b_1 + (a_1 - a_2) \cdot 2^k\right) \bmod Q$.
+    \item Returns $b_2$.
+\end{itemize}
+
+\subsection*{Correctness}
+This is checking that $T$ outputs $b_2$, such that $H(a_1, b_1) = H(a_2, b_2)$.
+Now note, $H(a,b) = g^{a 2^k + b} \bmod n$. A collision requires:
+\begin{equation*}
+g^{a_1 2^k + b_1} \equiv g^{a_2 2^k + b_2} \pmod n
+\end{equation*}
+Note that $g$ generates $\qrn$, $ord_n(g) = Q$. From cyclic group properties, $g^X \equiv g^Y \pmod n \iff X \equiv Y \pmod Q$. Therefroe, we need:
+\begin{equation*}
+a_1 2^k + b_1 \equiv a_2 2^k + b_2 \pmod Q
+\end{equation*}
+Solving for $b_2$:
+\begin{equation*}
+b_2 \equiv b_1 + (a_1 - a_2) 2^k \pmod Q
+\end{equation*}
+Note that this algo, $T$, computes exactly this value. So then, just subbing this $b_2$ back into the exponent congruence satisfies the condition, assuring that $H(a_1, b_1) = H(a_2, b_2)$.
+
+\subsection*{End}
+The hash family remains collision-resistant for anyone, given ONLY $\pk = (n, g)$. As shown in 2(c), finding a collision without knowing $Q$ will allow one to eff. factor $n$. Under the assumption that factoring is hard, an adv.'s success probability is negligible. However, the key generator holds $\sk = Q$, allowing them to bypass the hardness assumption, and to just compute colliding inputs $b_2$ via simple modular arithmetic in polynomial time.\\
+\indent Therefore, this proves that $H$ is a valid trapdoor hash family. $\qed$
 \end{solution}
 
 \end{problem}
