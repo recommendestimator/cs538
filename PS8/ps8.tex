@@ -467,6 +467,38 @@ The hash family remains collision-resistant for anyone, given ONLY $\pk = (n, g)
 \end{problem}
   
 \begin{solution}
-Your solution goes here
-\end{solution}
-\end{document}
+Note that, in the construction of this algo, each level, $j$, should only have $2^j$ leaves. This fact will be used later on in the explanation of my algo + analysis.
+
+\subsection*{Algorithm Specification}
+Let $L = \log_2 n$. Now initialize an array $\texttt{S}[0 \dots L]$ to $\bot$ (empty). Then, the hash function $H(\cdot, \cdot)$ will take two inputs.
+
+\begin{enumerate}
+    \item \textbf{Init:} $\texttt{S}[j] \leftarrow \bot$ for all $j \in \{0, \dots, L\}$.
+    \item \textbf{Process Leaves:} For $i = 1$ to $n$:
+    \begin{itemize}
+        \item $\texttt{curr} \leftarrow H(x_i)$
+        \item $\texttt{level} \leftarrow 0$
+        \item \textbf{While} $\texttt{S}[\texttt{level}] \neq \bot$:
+        \begin{itemize}
+            \item $\texttt{curr} \leftarrow H(\texttt{S}[\texttt{level}], \texttt{curr})$
+            \item $\texttt{S}[\texttt{level}] \leftarrow \bot$
+            \item $\texttt{level} \leftarrow \texttt{level} + 1$
+        \end{itemize}
+        \item $\texttt{S}[\texttt{level}] \leftarrow \texttt{curr}$
+    \end{itemize}
+    \item \textbf{Returns:} $\texttt{S}[L]$ as the Merkle root.
+\end{enumerate}
+
+\subsection*{Space Complexity}
+The algo shouldn't ever store more than $2 + \log n$ hash values. I'll prove this below:
+\begin{itemize}
+    \item \textbf{Array Storage:} $\texttt{S}$ has $L+1 = \log_2 n + 1$ slots. Note that, by construction, each slot will hold AT MOST one hash value. Therefore, $\texttt{S}$ uses $\le \log_2 n + 1$ hashes.
+    \item \textbf{Temp Storage:} The vars $\texttt{curr}$ only holds exactly 1 hash value during calculation.
+    \item \textbf{Max Storage:} During the \texttt{While} loop, $\texttt{S}[\texttt{level}]$ and $\texttt{curr}$ are BOTH held in memory to compute their parent. And right after hashing, $\texttt{S}[\texttt{level}]$ is cleared. Therefore, the max simultaneous hash storage is:
+    \begin{equation*}
+        |\texttt{S}|_{\max} + |\texttt{curr}| = (\log_2 n + 1) + 1 = \log_2 n + 2
+    \end{equation*}
+    \item Int vars (\texttt{i}, \texttt{level}) don't count towards hash storage.
+\end{itemize}
+Now, since $\log_2 n + 2 \le 2 + \log n$ for $n \ge 1$, the algo satisfies the $O(\log n)$ space constraint, while correctly computing the Merkle tree root. $\qed$
+\end{solution}\end{document}
