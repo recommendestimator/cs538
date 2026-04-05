@@ -158,8 +158,8 @@
 \begin{center}
 \Large{\textbf{CAS CS 538.  \ifsol Solutions to \fi Problem Set 8}}\\
 \smallskip
-\large{\textbf{Due electronically via Gradescope, Monday April 6, 2026 11:59pm}}//
-\large{\textbf{Om Khadka, U51801771}}
+\large{\textbf{Due electronically via Gradescope, Monday April 6, 2026 11:59pm}}\\
+\large{\textbf{\textit{Om Khadka, U51801771}}}
 \end{center}
 
 \noindent
@@ -191,7 +191,90 @@ Show that $H$ is actually a trapdoor hash
  \end{problem}
 
 \begin{solution}
-Your solution goes here
+Given the abstract definition of the trapdoor hash func before Q1, this question is now basically making me show an actual example of how a such a func would work.
+The main way I will solve this is (basically) through modular arithmetic.
+
+\subsection*{$\G$ and $\T$}
+Let $\G$ be the key gen for the trapdoor func, $\T$.\\
+
+\noindent $\G()$:
+\begin{itemize}
+    \item Select rnd $x \in \qrp \backslash \{1\}$.
+    \item Select rnd $s \in \Z_p^*$.
+    \item Compute $y$ as: $y = x^s \mod p$.
+    \item $\pk = (x, y), \sk = s$.
+\end{itemize}
+
+\noindent $\T(\sk, a_1, b_1, a_2)$:
+\begin{itemize}
+    \item Parse $\sk$ as $s$.
+    \item Computes $b_2$ as: $b_2 = b_1 + s^{-1}(a_1 - a_2)$.
+    \item Return $b_2$.
+\end{itemize}
+
+\subsection*{Correctness}
+Recall that $H((x, y), a, b) = abs(x^a y^b \mod p)$. There is an important property of this $abs$ func that I need to say first-off:
+\begin{itemize}
+    \item Because $x, y \in \qrp$, and $\qrp$ is multiplpicatively closed, then $\forall a, b, x^a y^b \in \qrp$.
+    \item $q$ is odd. That means $p \equiv_4 3$. Note that $-1$ can only be a quad. residue $\mod p \iff p \equiv_4 1$. Therefore, $-1 \notin \qrp$.
+    \item Therfore, if $z_1, z_2 \in \qrp, abs(z_1) = abs(z_2) \iff z_1 \equiv_p z_2$. Basically, the case that $z_1 \equiv -z_2$ is impossible.
+    \begin{itemize}
+        \item Therefore we can just reduce the equation we need to solve from $abs(\cdot) \equiv_p abs(\cdot)$ to just $x^{a_1}y^{b_1} \equiv_p x^{a_2}y^{b_2}$.
+    \end{itemize}
+\end{itemize}
+
+\noindent Firstly we can just sub $y$ for $x^s \mod p$:
+\begin{equation*}
+    x^{a_1 + sb_1} \equiv_p x^{a_2 + sb_2}
+\end{equation*}
+
+\noindent Now, from $\T$, we get $b_2 \equiv_q b_1 + s^{-1}(a_1 - a_2)$. By just multiplying both sides w/ $s$:
+\begin{equation*}
+    sb_2 \equiv_q sb_1 + a_1 - a_2 \to a_1 + sb_1 \equiv_q a_2 + sb_2
+\end{equation*}
+
+\noindent Now, note that $x, q$ are both prime, and that $x$ has order $q$. That means that exponents of $x$ are equivalent $\mod q$ iff the powers are equivalent modulo $p$:
+\begin{equation*}
+    x^{a_1 + sb_1} \equiv_p x^{a_2 + sb_2} \to a_1 + sb_1 \equiv_q a_2 + sb_2
+\end{equation*}
+
+\noindent This equation holds perfectly. It is also the exact same output as from $\T$, which is assumed to output the collision of $b_2$. Therfore, this shows how $H(\pk, a_1, b_1) = H(\pk, a_2, b_2)$ if you run $\T(\sk, a_1, b_1, a_2)$.
+
+\subsection*{Game}
+Now for the proof that $\G, \T$ holds, I will make an adversary game, with a MITM. The MITM, $\B$, will try to simluate a discrete log (DL) game for $\A$, which is playing against the CRHF.\\
+
+\noindent Let $\A$ be an eff. adversary, that can find collisions within $H$, w/ advantage $\epsilon$, when only given $\pk$. $\B$ will then also be another efficent adv., solving the DL problem in $\qrp$ with the same probability.
+
+\paragraph{DL Challenge} $\B$ firstly gets $(p, g, \Y)$, where $g$ generates $\qrp$ and $\Y \in \qrp$. The goal is to find $s \text{ such that } g^s \equiv_p \Y$.
+
+\paragraph{Execution} $\B$ will set $\pk \rightarrow (g, \Y)$. This distribution is the same as a valid public key, outputted by $\G$. Then, $\B$ will give $\pk$ to $\A$. Finally, $\A$ will output $(a_1, b_1), (a_2, b_2)$, such that they cause a collision when both plugged into $H$.
+
+\paragraph{Extracting the Key} By the properties of $abs$ from before, we are just solving for:
+\begin{equation*}
+    g^{a_1}\Y^{b_1} \equiv_p g^{a_2}\Y^{b_2}
+\end{equation*}
+
+\noindent Rearrage the terms:
+\begin{equation*}
+    g^{a_1 - a_2} \equiv_p \Y^{b_2 - b_1}
+\end{equation*}
+
+\noindent Let $\triangle a = (a_1 - a_2)$, and $\triangle b = (b_2 - b_1)$. Then, we're just solving for:
+\begin{equation*}
+    g^{\triangle a} \equiv_p \Y^{\triangle b}
+\end{equation*}
+
+\noindent Since $(a_1, b_1) \neq (a_2, b_2)$, there no way that $\triangle a \equiv_q \triangle b \equiv_q 0$. Imagine if $\triangle b \equiv 0$. Then $g^{\triangle a} \equiv_p 1$. And since $g$ has order $q$, this forces $\triangle a \equiv_p 0$ as well. This is impossible. So let's just say that $\triangle b \not\equiv_q 0$.\\
+
+\noindent Now, since $q$ is prime, then $\triangle b$ is invertible $\mod q$.Then, $\B$ computes $(\triangle b)^{-1} \mod q$ and gets:
+\begin{equation*}
+    s \rightarrow \triangle a \cdot (\triangle b)^{-1} \mod q
+\end{equation*}
+
+\noindent This satisfies $\Y \equiv_p g^s$, therefore this is a DL challenge. $\B$ only wins when $\A$ finds a collision. Since DL is hard, $\A$'s success is neglgible.\\
+
+\noindent This proves the security of the construction of $\G, \T$. $\qed$
+
 \end{solution}
 
 
