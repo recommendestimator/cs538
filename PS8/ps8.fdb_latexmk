@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1775418842.78263 "/home/omimahomie/cs538/PS8/ps8.tex" "ps8.pdf" "ps8" 1775418844.24606 0
+["pdflatex"] 1775419038.66914 "/home/omimahomie/cs538/PS8/ps8.tex" "ps8.pdf" "ps8" 1775419040.15099 0
   "/etc/texmf/web2c/texmf.cnf" 1757970215.13359 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/omimahomie/cs538/PS8/ps8.tex" 1775418842.22768 24048 51c63b4f3998c90064e2faf5e37db7e4 ""
+  "/home/omimahomie/cs538/PS8/ps8.tex" 1775419038.10591 24038 9e9848d479a034ee60a86dcfa9731217 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbi1440.tfm" 1136768653 3072 4dda4299ed0d9dcf48c6a8bcfdc499fc ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1136768653 3584 402da0b29eafbad07963b1224b222f18 ""
@@ -198,9 +198,9 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1758300299.77407 5312232 f3296911be9cc021788f3f879cf0a47d ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1758299484 6800788 4be6de6288c377fb30682838bc8197af ""
-  "ps8.aux" 1775418844.05511 633 ac71314d9fb4ebb8e4af63e4d1cc5087 "pdflatex"
-  "ps8.out" 1775418843.7526 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "ps8.tex" 1775418842.22768 24048 51c63b4f3998c90064e2faf5e37db7e4 ""
+  "ps8.aux" 1775419039.96515 633 ac71314d9fb4ebb8e4af63e4d1cc5087 "pdflatex"
+  "ps8.out" 1775419039.64562 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "ps8.tex" 1775419038.10591 24038 9e9848d479a034ee60a86dcfa9731217 ""
   (generated)
   "ps8.aux"
   "ps8.log"

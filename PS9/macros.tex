@@ -1,0 +1,364 @@
+% Unicode compatibility
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[noTeX]{mmap}
+  \usepackage[T1]{fontenc}
+\fi
+% XeTeX does not support mmap
+\ifLuaTeX
+  \usepackage{luatex85}
+  \usepackage[noTeX]{mmap}
+\fi
+
+\usepackage{framed}
+%\usepackage{mdframed}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{breakable}
+
+\usepackage[most]{tcolorbox}
+
+%\newtcolorbox{mybox}{
+%    enhanced,              % Required for advanced break control
+%    breakable,             % Allows spanning pages
+%    colback=white,
+%    colframe=black,
+%    sharp corners,
+%    boxrule=1pt,
+%    % The magic happens here:
+%    breakatskip=0pt,
+%    bottomrule at break=0pt, % Removes bottom line on the first part
+%    toprule at break=0pt,    % Removes top line on the second part
+%}
+
+
+\newtcolorbox{mybox}{
+    parbox = false,
+    enhanced,               % Required for the "at break" keys to work
+    breakable,              % Allows the box to span pages
+    colback=white,          % Background color
+    colframe=black,         % Border color
+    sharp corners,          % Square edges like fbox
+    boxrule=0.5pt,          % Standard thickness
+    % This removes the lines at the break point:
+    bottomrule at break=0pt,
+    toprule at break=0pt,
+    % Optional: Adjust padding to match fbox style
+    left=5pt, right=5pt, top=5pt, bottom=5pt
+}
+
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{7.1in}
+\setlength{\evensidemargin}{-0.2in}
+\setlength{\oddsidemargin}{-0.2in}
+\setlength{\headsep}{30pt}
+\setlength{\topmargin}{-0.3in}
+\usepackage{amsthm,amsfonts,amsmath,amssymb,caption,xspace,tikz,varwidth}
+\usepackage{cancel,subcaption}
+
+\usepackage{hyperref,verbatim}
+\usepackage[capitalise, noabbrev]{cleveref}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\definecolor{shadecolor}{RGB}{242,242,242}
+
+
+% \newcounter{defnum}
+% \setcounter{defnum}{0}
+% \renewenvironment{definition}
+%     {\par\addbigskip
+%    %\color{red}%
+%     \begin{shaded*}
+%     \noindent
+%     \textbf{Definition.\ }\ignorespaces}
+%     {\end{shaded*}
+%     \addbigskip}
+
+% \newenvironment{shadeddef}
+%     {\begin{shaded*}
+%     \noindent
+%         \begin{definition}
+%         \end{definition}
+%     {\end{shaded*}}
+
+\crefname{definition}{Definition}{Definitions}
+\crefname{remark}{Remark}{Remarks}
+
+
+
+\newcommand{\addmedskip}{\addvspace{\medskipamount}}
+
+\newcommand{\addbigskip}{\addvspace{\bigskipamount}}
+
+\pagestyle{myheadings}
+\markboth{BU CAS CS 538.}{BU CAS CS 538.} 
+\newcounter{problemnum}
+\setcounter{problemnum}{0}
+\newenvironment{problem}
+     {\addbigskip \setcounter{partnum}{0}
+      \noindent\stepcounter{problemnum}\textbf{Problem
+                                             \arabic{problemnum}.\ }}
+     {\par\addbigskip}
+
+
+\ifsol
+\newenvironment{solution}
+     % {\addbigskip
+     %  \noindent\textbf{Solution.\ }}
+     % {\par\addbigskip}
+      {\par\addbigskip
+   %\color{red}%
+\begin{mybox}\noindent
+    \textbf{Solution.\ }\ignorespaces}
+    {\end{mybox}
+    \addbigskip}
+\else
+\newenvironment{solution}
+     {\comment}
+     {\endcomment}
+\fi
+
+\newcounter{partnum}
+\setcounter{partnum}{0}
+\newenvironment{ppart}
+     {\addmedskip
+      \noindent\stepcounter{partnum}\textbf{(\alph{partnum})}\ }
+     {\par\addbigskip}
+
+% \newcommand{\Enc}{\mathrm{Enc}}
+% \newcommand{\Dec}{\mathrm{Dec}}
+\newcommand{\eqdef}{\buildrel{\scriptstyle{\mathit{def}}}\over{=}}
+
+\newcommand{\mbmod}{\,\%\,}
+
+% \newcommand{\indist}{  \mathrel{\vcenter{\offinterlineskip
+%   \hbox{$\sim$}\vskip-.35ex\hbox{$\sim$}\vskip-.35ex\hbox{$\sim$}}}}
+
+
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{mleftright} % for '\mleft' and '\mright' macros
+\newcommand{\uprob}[2]{\Pr_{#1}\mleft[\,#2\,\mright]}
+
+% notes
+\usepackage{xcolor}
+\newcommand{\julia}[1]{\textcolor{red}{\sf {\bf Julia: }#1}}
+\newcommand{\leo}[1]{\textcolor{blue}{\sf {\bf Leo: } #1}}
+
+%%%%%%%%%%%%% mike rosulek tex %%%%%%%%%%%%
+% %% font stuff
+
+\urlstyle{sf}
+\usepackage[T1]{fontenc}
+\usepackage{libertine}
+%\usepackage[libertine]{newtxmath}
+\usepackage[scaled=0.8]{beramono}
+
+\usepackage{microtype}
+\usepackage{cmap}
+
+
+%% colors, styles
+
+\newlength{\myline}
+\setlength{\myline}{0.7pt} % pgf "thick"
+
+\colorlet{bg}{white}
+\colorlet{fg}{black}
+\colorlet{shaded}{black!10}
+\colorlet{shadeborder}{black!30}
+\definecolor{hlbg}{HTML}{F5F5A4} 
+\colorlet{hlfg}{black}
+\colorlet{commentcolor}{black!60!white}
+\definecolor{errorcolor}{HTML}{a91616}
+\definecolor{linkcolor}{HTML}{4b804c}
+\definecolor{bitcolor}{HTML}{a91616}
+
+\pagecolor{bg}
+\color{fg}
+
+%% highlighting
+
+\usepackage[auto,outline]{contour}
+
+\contourlength{1.2\myline}
+\newcommand{\hl}[1]{%
+    \relax\ifmmode%
+        {}%
+        \contour{hlbg}{\textcolor{hlfg}{${} #1 {}$}}%
+        {}%
+    \else%
+        \contour{hlbg}{\textcolor{hlfg}{#1}}%
+    \fi%
+}
+
+%% codebox stuff 
+
+\usepackage{pipetex}
+\pipetexcommand{perl codebox2tex.pl}
+
+\definecolor{boxbordercolor}{HTML}{000000}
+\definecolor{boxbgcolor}{HTML}{FFFFFF}
+
+\newcommand{\codebox}[1]{%
+    \begin{varwidth}{\linewidth}%
+        \upshape%   no slant in definition/theorem statement!
+        \begin{tabbing}%
+            ~~~\=\quad\=\quad\=\quad\=\kill
+            #1
+        \end{tabbing}%
+    \end{varwidth}%
+}
+
+\newcommand{\fcodebox}[1]{%
+    \fboxsep=3pt%
+    \fcolorbox{boxbordercolor}{boxbgcolor}{\codebox{#1}}%
+}
+
+\newcommand{\titlecodebox}[2]{%
+    \fboxsep=0pt%
+    \fcolorbox{boxbordercolor}{boxbordercolor!10!boxbgcolor}{%
+        \begin{varwidth}{\linewidth}%
+            \centering%
+            \fboxsep=3pt%
+            \colorbox{boxbordercolor!10!boxbgcolor}{#1} \\
+            \colorbox{boxbgcolor}{\codebox{#2}}%
+        \end{varwidth}%
+    }%
+}
+
+\newcommand{\hltitlecodebox}[2]{%
+    \fboxsep=3pt%
+    \colorbox{hlbg}{%
+        \titlecodebox{#1}{#2}%
+    }%
+}
+
+\newcommand{\hlcodebox}[1]{%
+    \fboxsep=3pt%
+    \colorbox{hlbg}{%
+        \fcodebox{#1}%
+    }%
+}
+
+\newcommand{\procheader}[1]{\underline{#1}}
+\newcommand{\mycomment}[1]{\textcolor{commentcolor}{\small\textsl{// #1}}}
+
+%% library stuff and math stuff
+
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\lib}[1]{\mathcal{L}_{\textsf{\textup{#1}}}}
+\newcommand{\outputs}{\Rightarrow}
+\newcommand{\link}{\diamond}
+
+%\newcommand{\indist}{\approxeq}
+\renewcommand{\gets}{\twoheadleftarrow}
+
+\renewcommand{\le}{\leqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\geq}{\geqslant}
+
+\newcommand{\pct}{\mathbin{\%}}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\geq}{\geqslant}
+
+\newcommand{\secpar}{\lambda}
+
+%% bits
+
+\newcommand{\bit}[1]{\ensuremath{\textcolor{bitcolor}{\texttt{\upshape #1}}}\xspace}
+\newcommand{\bits}{\{\bit0,\bit1\}}
+
+%% algorithms
+\newcommand{\algorithm}[1]{\ensuremath{\textsf{\upshape#1}}\xspace}
+
+\newcommand{\Scheme}{\Sigma}
+\newcommand{\KeyGen}{\algorithm{KeyGen}}
+\newcommand{\Enc}{\algorithm{Enc}}
+\newcommand{\Encaps}{\algorithm{Encaps}}
+\newcommand{\Sign}{\algorithm{Sign}}
+\newcommand{\Dec}{\algorithm{Dec}}
+\newcommand{\Decaps}{\algorithm{Decaps}}
+\newcommand{\MAC}{\algorithm{MAC}}
+\newcommand{\Verify}{\algorithm{Verify}}
+\newcommand{\Share}{\algorithm{Share}}
+\newcommand{\Reconstruct}{\algorithm{Reconstruct}}
+\newcommand{\Filter}{\algorithm{Filter}}
+\newcommand{\Birthday}{\algorithm{Birthday}}
+\newcommand{\Start}{\algorithm{Start}}
+\newcommand{\Respond}{\algorithm{Respond}}
+\newcommand{\Finalize}{\algorithm{Finalize}}
+\newcommand{\RSA}{\algorithm{RSA}}
+\newcommand{\Commit}{\algorithm{Commit}}
+\renewcommand{\Check}{\algorithm{Check}}
+\newcommand{\Extract}{\algorithm{Extract}}
+\newcommand{\SimTrans}{\algorithm{SimTranscript}}
+
+\newcommand{\subname}[1]{\textsc{#1}}
+
+%% misc crypto
+
+\newcommand{\A}{\mathcal{A}}
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\R}{\mathcal{R}}
+\newcommand{\I}{\mathcal{I}}
+\renewcommand{\S}{\mathcal{S}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\randk}{\mathsf k}
+\newcommand{\randm}{\mathsf m}
+\newcommand{\randc}{\mathsf c}
+\newcommand{\Adv}{\mathcal{A}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\SSadv}{\textrm{SS}\textsf{adv}}
+\newcommand{\SSkeyleak}{\textrm{SSKeyLeak}}
+\newcommand{\SSkeyleakadv}{\textrm{SSKeyLeak}\textsf{adv}}
+
+
+\newcommand{\msg}{M}
+\newcommand{\key}{K}
+\newcommand{\ctext}{C}
+
+\newcommand{\attack}{\textsc{attack}}
+\newcommand{\getrandom}{\twoheadleftarrow}
+\newcommand{\indist}{  \mathrel{\vcenter{\offinterlineskip
+  \hbox{$\sim$}\vskip-.35ex\hbox{$\sim$}\vskip-.35ex\hbox{$\sim$}}}}
+\newcommand{\cenc}{\textsf{CaesarEnc}}
+\newcommand{\cdec}{\textsf{CaesarDec}}
+\newcommand{\rfrom}{\buildrel{\scriptstyle{\mathrm{R}}}\over{\leftarrow}}
+\newcommand{\com}{\mathsf{Comp}}
+\newcommand{\decom}{\mathsf{Decomp}}
+\newcommand{\PRGadv}{\textrm{PRG}\textsf{adv}}
+\newcommand{\countryguessadv}{\textsf{CountryGuessAdv}}
+\newcommand{\country}{\mathsf{Country}}
+\newcommand{\parity}{\mathsf{parity}}
+\newcommand{\PRFadv}{\textrm{PRF}\textsf{adv}}
+\DeclareMathOperator{\ord}{ord}
+\newcommand{\MACadv}{\textrm{MAC}\textsf{adv}}
+\newcommand{\CPAadv}{\textrm{CPA}\textsf{adv}}
+\newcommand{\AltCPAadv}{\textrm{Alt-CPA}\textsf{adv}}
+\newcommand{\BCadv}{\textrm{BC}\textsf{adv}}
+\newcommand{\CRadv}{\textrm{CR}\textsf{adv}}
+\newcommand{\checksum}{\textsf{Checksum}}
+
+\newcommand{\samples}{\xleftarrow{R}}
+\DeclareMathOperator{\Funs}{Funs}
+\newcommand{\onehalf}{{\fontfamily{ppl}\selectfont\textonehalf}}
+\newcommand{\onequarter}{{\fontfamily{ppl}\selectfont\textonequarter}}
+\newcommand{\threequarters}{{\fontfamily{ppl}\selectfont\textthreequarters}}
+\usepackage{amsthm,amsfonts,amsmath,xspace,tikz,varwidth,cancel,tikz}
+\usetikzlibrary{arrows.meta, calc, chains, shapes.geometric, positioning, decorations.pathreplacing}
