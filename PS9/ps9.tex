@@ -158,8 +158,8 @@
 \begin{center}
 \Large{\textbf{CAS CS 538.  \ifsol Solutions to \fi Problem Set 9}}\\
 \smallskip
-\large{\textbf{Due electronically via Gradescope, Monday April 13, 2026 11:59pm
-}}
+\large{\textbf{Due electronically via Gradescope, Monday April 13, 2026 11:59pm}}\\
+\large\textbf{Om Khadka, U51801771}
 \end{center}
 
 \noindent
@@ -203,8 +203,32 @@ You will now prove this theorem by proving the following parts.
 \begin{ppart}
 Consider the following assumption we call \DDHprime. It is exactly the same as DDH described in Attack Game 10.6 and Definition 10.8, except in Experiment 1, $\gamma$ is chosen at random from $\Z_q-\{\alpha \beta\}$ (call this modified experiment $1'$ and the corresponding advantage $\DDHprimeadv$). Show that assuming DDH holds for $\G$, then so does \DDHprime. (\emph{Hint:} apply the difference lemma to prove that experiments 1 and 1' are indistinguishable.)
 \end{ppart}
+
 \begin{solution}
-Your solution goes here
+Let $\A$ be some adversary. 
+Let $W_0$, $W_1$, and $W_{1'}$ be the events that $\A$ outputs $1$ in Experiment 0, Experiment 1, and Experiment $1'$ of the respective games.
+Then, by definition:
+\[
+\DDHadv[\A] = \left|\Pr[W_0] - \Pr[W_1]\right| \quad \text{and} \quad \DDHprimeadv[\A] = \left|\Pr[W_0] - \Pr[W_{1'}]\right|.
+\]
+
+\noindent Now, we can couple Exp 1 and Exp $1'$ on the same underlying probability space.
+In both, the challenger will sample $\alpha, \beta \rfrom \Z_q$, and then compute $u = g^\alpha, v = g^\beta$.
+In Exp 1 specifically, $\gamma \rfrom \Z_q$. In Experiment $1'$, $\gamma \rfrom \Z_q \setminus \{\alpha\beta\}$.
+Now, let's say that the ``bad event'', $Z$, is when $\gamma = \alpha\beta$ in Exp 1. Note that $\gamma$ is uniform in $\Z_q$ and is independent to $\alpha,\beta$, $\Pr[Z] = 1/q$.
+Conditioned on $\neg Z$, the distributions in both experiments are identical. Thusly, by the difference lemma:
+\[
+\left|\Pr[W_1] - \Pr[W_{1'}]\right| \leq \Pr[Z] = \frac{1}{q}.
+\]
+
+\noindent And by the triangle inequality:
+\[
+\DDHprimeadv[\A] = \left|\Pr[W_0] - \Pr[W_{1'}]\right| \leq \left|\Pr[W_0] - \Pr[W_1]\right| + \left|\Pr[W_1] - \Pr[W_{1'}]\right| \leq \DDHadv[\A] + \frac{1}{q}.
+\]
+
+\noindent Assuming DDH holds for $\G$, then $\DDHadv[\A]$ is negligible. 
+Since $q$ is exponential in the security parameter, $1/q$ is then also negligible. 
+Thus, $\DDHprimeadv[\A]$ is negligible, proving $\text{DDH}'$ holds for $\G$.
 \end{solution}
 
 \begin{ppart}
@@ -222,8 +246,41 @@ This map is a bijection.
 \emph{Hint:} Find the inverse of $M$ by solving a system of two linear equations. Linear algebra extends to modular arithmetic modulo a prime $q$. Note that $\alpha, \beta$, and $\gamma$ are not inputs to the map; rather, they are used to specify a particular map.
 
 \end{ppart}
+
 \begin{solution}
-Your solution goes here
+Note the linear system mod, $q$, that's given:
+\[
+\begin{cases}
+x \equiv d + \beta e \pmod q, \\
+y \equiv \alpha d + \gamma e \pmod q.
+\end{cases}
+\]
+
+\noindent Now, look at the first congruence. Solving for $d$ gets us:
+\[
+d \equiv x - \beta e \pmod q.
+\]
+
+\noindent And by subbing this into the 2nd congruence:
+\[
+y \equiv \alpha(x - \beta e) + \gamma e \equiv \alpha x + (\gamma - \alpha\beta)e \pmod q.
+\]
+
+\noindent Rearrange the terms:
+\[
+(\gamma - \alpha\beta)e \equiv y - \alpha x \pmod q.
+\]
+
+\noindent And since $\gamma \not\equiv_q \alpha\beta$ and $q$ is prime, $\gamma - \alpha\beta \not\equiv 0 \pmod q$.
+In the field $\mathbb{Z}_q$, every non-0 element has a multiplicative inverse, so it is possible to solve uniquely for $e$:
+\[
+e \equiv (\gamma - \alpha\beta)^{-1}(y - \alpha x) \pmod q.
+\]
+
+\noindent And by subbing this expression for $e$ back into $d \equiv x - \beta e$, this gives us a unique value for $d$ mod $q$.
+Thus, for every pair $(x,y) \in \mathbb{Z}_q \times \mathbb{Z}_q$, there exists exactly one pair $(d,e)$ that maps to it under $M$.
+This makes an explicit inverse map $M^{-1}$, proving that $M$ is invertible. 
+And since $M$ is a map on a finite set and is invertible, it is a bijection.
 \end{solution}
 
 \begin{ppart} 
@@ -232,17 +289,69 @@ Prove the following. (\emph{Hint:} work in the exponent space---i.e., consider l
 For any $u=g^\alpha$, $v=g^\beta$, and $w_1 \ne g^{\alpha\beta}$, if $d$ and $e$ are a uniformly random pair of elements from $\Z_q$, then $X=g^d v^e$ and $Y=u^d w_1^e$ is a uniformly random pair of elements from $\G$ (i.e., every pair $X, Y$ occurs with probability $1/q^2$).
 \end{lemma}
 \end{ppart}
-\begin{solution}
-Your solution goes here
-\end{solution}
 
+\begin{solution}
+Let $\gamma = \log_g(w_1)$. 
+Now, since $w_1 \neq g^{\alpha\beta}$, then we have $\gamma \not\equiv_q \alpha\beta$.
+This is because $g$ generates $\G$ of prime order $q$, which is the discrete log map $z \mapsto \log_g(z)$, which is a bijection from $\G$ to $\Z_q$.\\
+
+\noindent Now let $x = \log_g(X)$, and $y = \log_g(Y)$.
+By subbing in $u=g^\alpha$, $v=g^\beta$, and $w_1=g^\gamma$ into the definitions of $X$ and $Y$, we get the following system mod $q$:
+\[
+\begin{cases}
+x \equiv d + \beta e \pmod q, \\
+y \equiv \alpha d + \gamma e \pmod q.
+\end{cases}
+\]
+
+\noindent This is exactly the map $M: \Z_q \times \Z_q \to \Z_q \times \Z_q$ from Lemma 1 (1b).
+And since $\gamma \not\equiv_q \alpha\beta$, (1b) guarantees that $M$ is a bijection.\\
+
+\noindent Because $(d,e)$ is chosen uniformly at random from $\Z_q \times \Z_q$ and $M$ is a bijection, the image $(x,y) = M(d,e)$ must then also be uniformly distributed over $\Z_q \times \Z_q$.
+By applying the bijection $z \mapsto g^z$ component-wise, it is then the case that $(X,Y) = (g^x, g^y)$ is uniformly distributed over $\G \times \G$.
+Therefore, every pair $(X,Y) \in \G^2$ occurs with probability exactly $1/q^2$.
+\end{solution}
 \begin{ppart} 
 Use the previous part to build a reduction that shows \DDHprime{} implies the security of $\prg$. (Combined with part (a), this proves Theorem 1.)
 In particular, show that for every efficient adversary $\Adv$ breaking $\prg$ with advantage $\epsilon$, there is an efficient adversary $\Adv'$ breaking \DDHprime{} with advantage $\epsilon$ as well.
 (\emph{Hint:} This is a single reduction; no hybrid arguments are needed. The previous part tells you exactly how your reduction should transform $u, v$, and $w$ that it receives from the \DDHprime{} challenger. It should that transformation $k$ times.)
 \end{ppart}
+
 \begin{solution}
-Your solution goes here
+
+Let $\Adv$ be the adv. that breaks the PRG $\prg$ with advantage $\epsilon$. 
+Then, we can make another adv. $\Adv'$ that breaks the $\text{DDH}'$ assumption with the same advantage.\\
+
+\noindent $\Adv'$ will get a challenge triple $(u, v, w)$ from the $\text{DDH}'$ challenger. $\Adv'$ will then do the following:
+\begin{enumerate}
+    \item $\Adv'$ takes $2k$ independent values $d_1, e_1, \dots, d_k, e_k \rfrom \Z_q$.
+    \item For each $i \in \{1, \dots, k\}$, $\Adv'$ will calculate:
+    \[
+    X_i = g^{d_i} v^{e_i} \quad \text{and} \quad Y_i = u^{d_i} w^{e_i}.
+    \]
+    \item $\Adv'$ then sends the sequence $(X_1, Y_1, \dots, X_k, Y_k)$ to $\Adv$.
+    \item $\Adv'$ will output whatever $\Adv$ outputs.
+\end{enumerate}
+
+\noindent Now, by analyzing the distribution of the sequence passed to $\Adv$ in the two Exp's of the $\text{DDH}'$ game:
+\begin{itemize}
+    \item \textbf{Exp 0 of $\text{DDH}'$:} Here, $u = g^\alpha$, $v = g^\beta$, and $w = g^{\alpha\beta}$ for some rnd $\alpha, \beta \rfrom \Z_q$.\\
+    For each $i$, we have:
+    \[
+    Y_i = (g^\alpha)^{d_i} (g^{\alpha\beta})^{e_i} = g^{\alpha(d_i + \beta e_i)} = (g^{d_i + \beta e_i})^\alpha = X_i^\alpha.
+    \]
+    Now, since $d_i, e_i$ are rnd and independent, $X_i = g^{d_i} (g^\beta)^{e_i}$ is randomly distributed in $\G$. Thus, the sequence $(X_1, X_1^\alpha, \dots, X_k, X_k^\alpha)$ is distributed exactly as the output of $\prg$ on a uniformly random seed $(X_1, \dots, X_k, \alpha)$. This is in line with \textbf{Exp 0} of the PRG security game.
+    
+    \item \textbf{Exp $1'$ of $\text{DDH}'$:} Here, $u = g^\alpha$, $v = g^\beta$, and $w = g^\gamma$ where $\gamma \not\equiv_q \alpha\beta$.
+    By Lemma 2 (1c), for fixed $u, v, w$ satisfying this condition, the pair $(X_i, Y_i) = (g^{d_i} v^{e_i}, u^{d_i} w^{e_i})$ is uniformly distributed over $\G \times \G$ when $d_i, e_i$ are rnd. Since the pairs are rnd, the entire sequence $(X_1, Y_1, \dots, X_k, Y_k)$ is uniformly distributed over $\G^{2k}$. This is in line with \textbf{Exp 1} of the PRG security game.
+\end{itemize}
+
+\noindent Now since $\Adv'$ perfectly simulates the PRG game for $\Adv$, then the advantage of $\Adv'$ is exactly equal to the advantage of $\Adv$:
+\[
+\DDHprimeadv[\Adv'] = \PRGadv[\Adv, \prg] = \epsilon.
+\]
+Thus, if $\text{DDH}'$ holds, $\prg$ is a secure PRG. And by (1a), this proves that $\prg$ is secure under the standard DDH assumption.
+
 \end{solution}
 
 
@@ -279,7 +388,44 @@ The underlying PRG is as follows:
 \end{ppart}
 
 \begin{solution}
-Your solution goes here
+Assume, for the sake of contradiction, $\A$ is an eff. adv. that can distinguish $G$ with non-negl. advantage $\epsilon$.
+Then, it is possible to make another eff. adv. $\B$ that breaks $QR_p$ with the same advantage.\\
+
+\noindent $\B$ will get $(u, v, w)$ from the DDH challenger, where $u=g^\alpha$, $v=g^\beta$, and $w$ is either $g^{\alpha\beta}$ (Exp 0) or $g^\gamma$ for rnd $\gamma$ (Exp 1).
+$\B$ will then do the following:
+\begin{enumerate}
+    \item $\B$ sends $(u, v)$ to $\A$ as the public parameters $(g, h)$.
+    \item $\B$ will calculate $r \gets w$ and $s_1 \gets \mathrm{abs}(u)$.
+    \item $\B$ will then send the pair $(r, s_1)$ to $\A$.
+    \item $\B$ outputs whatever $\A$ outputs.
+\end{enumerate}
+
+Now look at the distribution of $(r, s_1)$ passed to $\A$ in the two DDH experiments:
+\begin{itemize}
+    \item \textbf{Exp 0 (Real):} Here, $w = g^{\alpha\beta}$. Let the implicit PRG seed be $s_0 = \alpha$. Then:
+    \[
+    r = w = g^{\alpha\beta} = (g^\beta)^\alpha = v^\alpha = h^{s_0},
+    \]
+    and
+    \[
+    s_1 = \mathrm{abs}(u) = \mathrm{abs}(g^\alpha) = \mathrm{abs}(g^{s_0}).
+    \]
+    This is just the same output distribution as $G(s_0)$ in \textbf{Exp 0} of the PRG game.
+    
+    \item \textbf{Exp 1 (Rnd):} Here, $w = g^\gamma$ where $\gamma$ is chosen randly and independently of $\alpha, \beta$. 
+    Thus, $r = w$ is uniformly distributed in $QR_p$. 
+    Since $\alpha$ is uniform, $u = g^\alpha$ is also uniformly distributed in $QR_p$. \\\\
+    Because $abs: QR_p \to Z_q$ is a bijection (from question, 8.5.1), $s_1 = abs(u)$ is uniformly distributed in $Z_q$. 
+    Moreover, $r$ and $s_1$ are independent because $\gamma$ and $\alpha$ are independent. 
+    Then, this just becomes the same uniform distribution as in \textbf{Exp 1} of the PRG game.
+\end{itemize}
+
+\noindent Now since $\B$ perfectly simulates the modified PRG security game for $\A$, the advantage of $\B$ just becomes that of $\A$:
+\[
+\DDHadv[\B] = \PRGadv[\A] = \epsilon.
+\]
+\noindent By our initial assumption, DDH is hard in $QR_p$, so $\DDHadv[\B]$ must be negligible.
+Therefore, $\PRGadv[\A]$ is negligible, proving that $G$ is a secure PRG.
 \end{solution}
 
 \begin{ppart}
@@ -290,9 +436,36 @@ Your solution goes here
 \end{ppart}
 
 \begin{solution}
-Your solution goes here
-\end{solution}
+The NSA generator will do the following:
+\begin{enumerate}
+    \item Sample $g \rfrom QR_p$ uniformly at rnd.
+    \item Sample $c \rfrom \Z_q$ uniformly at rnd.
+    \item Set $h = g^c$.
+    \item Output the public parameters $(g, h)$, while keeping the trapdoor key $sk = c$ secret.
+\end{enumerate}
 
+\noindent Now, given the trapdoor $sk = c$ and the $i$-th output $r_i = h^{s_i}$, the backdoor function $T$ should recover the next state $s_{i+1}$ as follows:
+\[
+T(sk, r_i) = \mathrm{abs}\left( r_i^{c^{-1} \bmod q} \right).
+\]
+
+\noindent \textbf{Correctness:} Since $r_i = h^{s_i} = (g^c)^{s_i} = g^{c s_i}$, then raising $r_i$ to the power of $c^{-1} \bmod q$ will result in:
+\[
+r_i^{c^{-1}} = \left(g^{c s_i}\right)^{c^{-1}} = g^{s_i}.
+\]
+
+\noindent By applying the bijection $\mathrm{abs}(\cdot)$ to $g^{s_i}$, one will recover $s_{i+1} = \mathrm{abs}(g^{s_i})$.
+Thus, by knowing $sk$, one should be able to efficently predict all future states and outputs.\\
+
+\noindent \textbf{Indistinguishability of Parameters.}
+In the honest generation, $g$ and $h$ are sampled independently and uniformly from $QR_p$. In the NSA generation, $g$ is sampled rndly from $QR_p$, and then $h$ is computed as $g^c$, where $c$ is sampled uniformly from $\Z_q$.
+Now because $QR_p$ is a cyclic group of prime order $q$, for any fixed $g \neq 1$, the map $c \mapsto g^c$ will be a bijection from $\Z_q$ to $QR_p$.
+Therefore, when $c$ is uniform in $\Z_q$, $h = g^c$ will be uniformly distributed over $QR_p$, and is therefore statistically independent of $g$. \\
+
+\noindent Consequently, the joint distribution of $(g, h)$ produced by the NSA generator is \emph{the same} to the joint distribution produced by the honest generator.
+The statistical distance between the two distributions is just $0$, making them indistinguishable from one another.
+An adv. will not be able to detect the presence of the backdoor without first even knowing that $sk$ exists.
+\end{solution}
 
 
 \end{problem}

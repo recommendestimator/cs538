@@ -1,0 +1,336 @@
+\documentclass[12pt]{article}
+
+\newif\ifsol
+\soltrue
+
+% Unicode compatibility
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[noTeX]{mmap}
+  \usepackage[T1]{fontenc}
+\fi
+% XeTeX does not support mmap
+\ifLuaTeX
+  \usepackage{luatex85}
+  \usepackage[noTeX]{mmap}
+\fi
+
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{7.1in}
+\setlength{\evensidemargin}{-0.2in}
+\setlength{\oddsidemargin}{-0.2in}
+\setlength{\headsep}{30pt}
+\setlength{\topmargin}{-0.3in}
+
+\usepackage{amsthm,amsfonts,amsmath,xspace,tikz,varwidth,cancel,soul}
+\usepackage{hyperref,verbatim}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\newcommand{\addmedskip}{\addvspace{\medskipamount}}
+
+\newcommand{\addbigskip}{\addvspace{\bigskipamount}}
+
+\pagestyle{myheadings}
+\markboth{BU CAS CS 538.}{BU CAS CS 538.} 
+\newcounter{problemnum}
+\setcounter{problemnum}{0}
+\newenvironment{problem}
+     {\addbigskip \setcounter{partnum}{0}
+      \noindent\stepcounter{problemnum}\textbf{Problem
+                                             \arabic{problemnum}.\ }}
+     {\par\addbigskip}
+     
+\ifsol
+\newenvironment{solution}
+     {\addbigskip
+      \noindent\color{blue}\textbf{Solution.\ }}
+     {\par\addbigskip}
+\else
+\newenvironment{solution}
+     {\comment}
+     {\endcomment}
+\fi
+
+\newcounter{partnum}
+\setcounter{partnum}{0}
+\newenvironment{ppart}
+     {\addmedskip
+      \noindent\stepcounter{partnum}\textbf{(\alph{partnum})}\ }
+     {\par\addbigskip}
+
+\newcommand{\Enc}{\mathrm{Enc}}
+\newcommand{\Dec}{\mathrm{Dec}}
+\newcommand{\pk}{\mathit{pk}}
+\newcommand{\sk}{\mathit{sk}}
+\newcommand{\qrn}{\mathit{QR}_n}
+\newcommand{\qrp}{\mathit{QR}_p}
+\newcommand{\qrpone}{\mathit{QR}_{p_1}}
+\newcommand{\qrptwo}{\mathit{QR}_{p_2}}
+\newcommand{\prg}{\mathit{J}}
+
+\newcommand{\crt}{\mathrm{crt}}
+
+
+\newcommand{\eqdef}{\buildrel{\scriptstyle{\mathit{def}}}\over{=}}
+\newcommand{\rfrom}{\buildrel{\scriptstyle{\mathrm{R}}}\over{\leftarrow}}
+
+\newcommand{\mbmod}{\,\%\,}
+
+\newcommand{\A}{\mathcal{A}}
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\G}{\mathbb{G}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\R}{\mathcal{R}}
+\renewcommand{\S}{\mathcal{S}}
+\newcommand{\I}{\mathcal{I}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\randk}{\mathsf k}
+\newcommand{\randm}{\mathsf m}
+\newcommand{\randc}{\mathsf c}
+\newcommand{\Adv}{\mathcal{A}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\SSadv}{\textrm{SS}\textsf{adv}}
+\newcommand{\PRGadv}{\textrm{PRG}\textsf{adv}}
+\newcommand{\threebitadv}{\textrm{3Bit}\textsf{adv}}
+\newcommand{\PRFadv}{\textrm{PRF}\textsf{adv}}
+\newcommand{\MACadv}{\textrm{MAC}\textsf{adv}}
+\newcommand{\CPAadv}{\textrm{CPA}\textsf{adv}}
+\newcommand{\BCadv}{\textrm{BC}\textsf{adv}}
+\newcommand{\CRadv}{\textrm{CR}\textsf{adv}}
+\newcommand{\DDHprimeadv}{\textrm{DDH}'\textsf{adv}}
+\newcommand{\DDHadv}{\textrm{DDH}\textsf{adv}}
+\newcommand{\DDHprime}{DDH$'$}
+\newcommand{\SIGadv}{\textsf{SIGadv}}
+
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\indist}{  \mathrel{\vcenter{\offinterlineskip
+  \hbox{$\sim$}\vskip-.35ex\hbox{$\sim$}\vskip-.35ex\hbox{$\sim$}}}}
+
+\newcommand{\samples}{\xleftarrow{R}}
+
+\newcommand{\hdl}{H_{\mathrm{dl}}}
+
+\begin{document}
+\begin{center}
+\Large{\textbf{CAS CS 538.  \ifsol Solutions to \fi Problem Set 11}}\\
+\smallskip
+\large{\textbf{Due electronically via Gradescope, Monday April 27, 2026 11:59pm
+}}
+\end{center}
+
+\begin{problem} (60 points)
+Let $(G, S, V)$ be a secure signature scheme. Consider the following signature scheme:
+\begin{itemize}
+\item $G'()$: same as $G$. Return $(\pk, \sk)$. 
+
+\item $S'(\sk, m)$: run $G$ to sample a temporary key pair $(\pk_t, \sk_t)$. Produce $\tau=S(\sk, \pk_t)$ ($\tau$ signs the temporary public key with the permanent key) and $\rho=S(\sk_t, m)$ ($\rho$ signs the message with the temporary signing key). Output $\sigma'=(\pk_t, \tau, \rho)$.
+
+\item $V'(\pk, m, (\pk_t, \tau, \rho))$: Output $V(\pk, \pk_t, \tau)\land V(\pk_t, m, \rho)$.
+\end{itemize}
+
+
+Note that this way of doing signatures is similar to what happens in certificate chains (although the same $\pk_t$ may be used multiple times). It also happens in signature delegation: I can send $\sk_t$ along with $\tau$ to someone else when I want to delegate the power to sign with my key temporarily to them (for example, if I am absent).
+The temporary key can then be publicly revoked.
+This approach could also be used for delegation to multiple parties, followed by traitor tracing: if $\sk_t$ is used by a traitor to sign a message that should not be signed, then the traitor's signature will contain $\pk_t$ and thus reveal who the traitor is. % if the temporary key is made using an unclonable quantum state, then it becomes self-revoking.
+
+
+Prove that $(G', S', V')$ is secure via the following two steps. Consider an adversary $\Adv$ who makes  $q$ chosen-message attack queries and then forges a valid signature $\sigma'=(\pk_t, \tau, \rho)$ for a new message with nonnegligible probability $p$ .
+
+\begin{ppart} (30 points)
+Let 
+\begin{itemize}
+\item $X$ be the event that $\Adv$ succeeds and
+\item $Y$ be the event that the value $\pk_t$ in $\sigma'$  was at some point given to $\Adv$ as part of the response to any of its chosen-message attack queries. 
+\end{itemize}
+Show a reduction that breaks $S$ with probability polynomially related to $\Pr[X\land Y]$.
+\end{ppart}
+
+\begin{solution}
+Let $\mathcal{B}$ be an efficient adv, that uses $\mathcal{A}$ to break the EUF-CMA security of $(G,S,V)$.\\
+
+\noindent
+$\mathcal{B}$ is given a public key, $pk$, and oracle access to $S(sk, \cdot)$.
+It will guess a rnd index $i^* \xleftarrow{R} \{1,\dots,q\}$ and runs $\mathcal{A}$ as follows:\\
+
+\noindent
+On the $i$-th signing query $m_i$ from $\mathcal{A}$:
+\begin{itemize}
+    \item \textbf{IF $i = i^*$}
+    \begin{enumerate}
+        \item Set $pk_t := pk$.
+        \item Query the signing oracle, to get $\tau \leftarrow S(sk, pk)$.
+        \item Query the signing oracle again, to get $\rho \leftarrow S(sk, m_{i^*})$.
+        \item Return $\sigma_{i^*} = (pk_t, \tau, \rho)$ to $\mathcal{A}$.
+    \end{enumerate}
+    \item \textbf{ELSE ($i \neq i^*$)}
+    \begin{enumerate}
+        \item Generate $(pk_t, sk_t) \leftarrow G()$.
+        \item Query the signing oracle, to get $\tau \leftarrow S(sk, pk_t)$.
+        \item Calculate $\rho \leftarrow S(sk_t, m_i)$.
+        \item Return $\sigma_i = (pk_t, \tau, \rho)$ to $\mathcal{A}$.\\
+    \end{enumerate}
+\end{itemize}
+
+
+\noindent\textbf{Correctness of Simulator}
+For $i \neq i^*$, this is a perfect simulation of $S'$.
+For $i = i^*$, we will have $pk_t = pk$, $\tau = S(sk, pk)$, and $\rho = S(sk, m_{i^*})$, so:
+\[
+V'(pk,\, m_{i^*},\, (pk, \tau, \rho)) = V(pk, pk, \tau) \wedge V(pk, m_{i^*}, \rho) = 1,
+\]
+which is also a valid response.
+Therefore, the simulation is perfect in both cases.\\
+
+
+\noindent\textbf{Forgery}
+Eventually, $\mathcal{A}$ outputs $(m^*, \sigma^*)$ where $\sigma^* = (pk_t^*, \tau^*, \rho^*)$.
+$\mathcal{B}$ will output the pair $(m^*, \rho^*)$ as its forgery.\\
+
+
+\noindent\textbf{Correctness}
+Now suppose that $X \wedge Y$ holds and $\mathcal{B}$'s guess satisfies $pk_t^* = pk$ (basically that the response to query $i^*$ was the one whose $pk_t$ appeared in $\mathcal{A}$'s forgery).
+Then:
+\begin{itemize}
+    \item $V'(pk, m^*, (pk, \tau^*, \rho^*)) = 1$ implies that $V(pk, m^*, \rho^*) = 1$.
+    \item Since $(m^*, \sigma^*)$ is a valid forgery for $\mathcal{A}$, we will then have $m^* \notin \{m_1, \dots, m_q\}$.
+    \item $\mathcal{B}$'s signing oracle was queried on msgs $\{pk,\, m_{i^*}\} \cup \{pk_{t,j}\}_{j \neq i^*}$, but never on $m^*$ (since $m^* \neq m_{i^*}$, as $m^*$ must be fresh).
+\end{itemize}
+Therefore $(m^*, \rho^*)$ is a valid EUF-CMA forgery against $(G, S, V)$.\\
+
+
+\noindent\textbf{Success \%}
+$\mathcal{B}$ will succeed whenever $X \wedge Y$ occurs and $\mathcal{B}$ correctly guessed $i^*$, which happens with probability $1/q$. Therefore:
+\[
+\Pr[\mathcal{B} \text{ succeeds}] \;\geq\; \frac{1}{q} \cdot \Pr[X \wedge Y].
+\]
+And if $\Pr[X \wedge Y]$ is non-negligible, then $\mathcal{B}$ will then break the EUF-CMA security of $(G,S,V)$ with non-negligible probability as well.
+\end{solution}
+
+%%
+
+\begin{ppart} (30 points)
+Use part (a) and some additional work to prove that $(G', S', V')$ is secure. Hint: $p=\Pr[X]=\Pr[X\land Y]+\Pr[X\land\lnot Y]$. Part (a) helps when the first of these addends is at least $p/2$. Now think what to do when it's $p/2$ or less. You'll need a second reduction.
+\end{ppart}
+\end{problem}
+
+\begin{solution}
+By combining the reduction from (1a) with another reduction, handling the complementary case, we can prove that $(G', S', V')$ is secure.\\
+
+
+\noindent\textbf{Setup}
+Let $\mathcal{A}$ be an efficient adv, that can forge a valid signature under $(G', S', V')$ with non-negligible probability $p = \Pr[X]$.
+By the hint, we know that at least one term has gotta be $\geq p/2$. Each case can be handled with their own reduction:\\
+
+
+\noindent\textbf{The case that $\Pr[X \wedge Y] \geq p/2$:}
+Let $\mathcal{B}_1$ just be the reduction from (1a). From (1a), we already know that $\B_1$ breaks $(G, S, V)$ with probability:
+\[
+\Pr[\mathcal{B}_1 \text{ succeeds}] \;\geq\; \frac{1}{q} \cdot \Pr[X \wedge Y] \;\geq\; \frac{p}{2q},
+\]
+which is non-negligible, since $p$ is non-negligible and $q$ is polynomial.\\
+
+
+\noindent\textbf{The case that $\Pr[X \wedge \lnot Y] \geq p/2$:}
+Let $\mathcal{B}_2$ be a new adv, given $pk$ and oracle access to $S(sk, \cdot)$.
+It will run $\mathcal{A}$ and simulates the signing oracle as follows:\\
+
+\noindent 
+On the $i$-th signing query $m_i$ from $\mathcal{A}$:
+\begin{enumerate}
+    \item Generate $(pk_t, sk_t) \leftarrow G()$.
+    \item Query the signing oracle, to get $\tau \leftarrow S(sk, pk_t)$.
+    \item Calculate $\rho \leftarrow S(sk_t, m_i)$.
+    \item Return $\sigma_i = (pk_t, \tau, \rho)$ to $\mathcal{A}$.
+\end{enumerate}
+Note how this is the same perfect simulation of $S'$ used in (1a) (applied to every query).\\
+
+
+\noindent\textit{Forgery}
+When $\mathcal{A}$ outputs $(m^*, \sigma^*)$ where $\sigma^* = (pk_t^*, \tau^*, \rho^*)$, $\mathcal{B}_2$ will output $(pk_t^*, \tau^*)$ as its EUF-CMA forgery.\\
+
+
+\noindent\textit{Correctness}
+If $X \wedge \lnot Y$ occurs, then:
+\begin{itemize}
+    \item $V'(pk, m^*, (pk_t^*, \tau^*, \rho^*)) = 1$, which implies $V(pk, pk_t^*, \tau^*) = 1$.
+    \item $\lnot Y$ means that $pk_t^*$ never showed up as $pk_t$ in any oracle response.
+    And Since $\mathcal{B}_2$'s only signing oracle queries are $\{pk_{t,1}, \dots, pk_{t,q}\}$,
+    and $pk_t^* \notin \{pk_{t,1}, \dots, pk_{t,q}\}$, the msg $pk_t^*$
+    had to have been \emph{never queried} by $\mathcal{B}_2$.
+\end{itemize}
+Therefore $(pk_t^*, \tau^*)$ is a valid EUF-CMA forgery against $(G, S, V)$, and:
+\[
+\Pr[\mathcal{B}_2 \text{ succeeds}] = \Pr[X \wedge \lnot Y] \;\geq\; \frac{p}{2}.
+\]\\
+
+
+\noindent\textbf{End}
+Both cases managed to break the EUF-CMA security of $(G, S, V)$
+with non-negligible probability. This contradicts the initial assumed security, proving that $(G', S', V')$ is secure. $\qed$
+\end{solution}
+
+%%
+
+\begin{problem} (40 points)
+In the Schnorr identification protocol (section 19.1), the prover is supposed to sample a fresh uniformly random value $\alpha_t  \rfrom \mathbb{Z}_q$. But what if the prover does not correctly sample  $\alpha_t$ --- for example, what if the $\alpha_t$ values for different protocols are not independent, even though each one is individually random? Such an implementation mistake could doom security, as demonstrated by attacks on Sony Playstation 3 and some Bitcoin wallet implementations (see the end of 19.3 in the textbook). The attacks happened in signature schemes rather than identification protocols, but the idea is the same. It is actually challenging to get fresh randomness for every signature generated, which is why a preferred implementation these days is to generate $\alpha_t$ as a PRF applied to the message being signed; that way, fresh randomness needs to be generated only once for the PRF seed, at the same time as $(\pk, \sk)$ are generated). (See Excercise 13.6 if you are interested in the details.)
+
+Specifically for this problem, consider a prover who runs the Schnorr identification protocol with a verifier twice. In the first interaction, the prover uniformly samples $\alpha_{t,1} \rfrom \mathbb{Z}_q$. In the second, they set $\alpha _{t,2} \equiv_q a \cdot \alpha _{t,1} + b$, for some known $a,b \in \mathbb{Z}_q$. The prover uses the same secret $\alpha $ in both interactions. Suppose the verifier knows $a$ and $b$, their challenge values $c_1$ and $c_2$, and learns the prover's messages $(u_{t,i}, \alpha _{z,i})$ for $i\in \left\{1,2 \right\}$. Show how the verifier can learn, with high probability, the prover's secret $\alpha $.
+\end{problem}
+
+\begin{solution}
+Looking back at Schnorr's ID protocol, note how each accepting conversation satisfies the following:
+\[
+\alpha_{z,i} \equiv_q \alpha_{t,i} + \alpha \cdot c_i.
+\]
+The 2 interactions, by the question, gives the verifier the following system:
+\begin{align}
+\alpha_{z,1} &\equiv_q \alpha_{t,1} + \alpha \cdot c_1, \tag{1}\\
+\alpha_{z,2} &\equiv_q \alpha_{t,2} + \alpha \cdot c_2
+             \equiv_q a\cdot\alpha_{t,1} + b + \alpha \cdot c_2. \tag{2}
+\end{align}
+Now from the 1st equation, we can isolate $\alpha_{t,1}$:
+\[
+\alpha_{t,1} \equiv_q \alpha_{z,1} - \alpha \cdot c_1.
+\]
+And then sub that into the second equation:
+\[
+\alpha_{z,2} \equiv_q a(\alpha_{z,1} - \alpha \cdot c_1) + b + \alpha \cdot c_2
+= a \cdot \alpha_{z,1} + b + \alpha(c_2 - a \cdot c_1).
+\]
+And then just a bit of rearranging gets:
+\[
+\alpha \cdot (c_2 - a \cdot c_1) \equiv_q \alpha_{z,2} - a \cdot \alpha_{z,1} - b.
+\]
+Now since $q$ is prime, if $c_2 - a\cdot c_1 \not\equiv_q 0$, then the verifier will recover:
+\[
+\alpha \;\equiv_q\; \bigl(\alpha_{z,2} - a\cdot\alpha_{z,1} - b\bigr)
+               \cdot \bigl(c_2 - a\cdot c_1\bigr)^{-1} \pmod{q}.\\
+\]
+
+\noindent\textbf{Probability of getting $\alpha$}
+Note that the denominator is zero only when $c_2 \equiv_q a \cdot c_1$.
+Now, since $c_1$ is fixed and $c_2$ is drawn uniformly at rnd from $C$ (which is super-poly by assumption [Boneh-Shoup 19.1]), this event will occur with probability AT MOST $1/|C|$, which is negligible.
+Therefore, the verifier should be able to recover $\alpha$ with probability $\geq 1 - 1/|C|$.\\
+
+
+\noindent\textbf{Note}
+How this extraction works is pretty similar to the rewinding technique (Boneh-shoup 19.1).
+It basically shows how two accepting conversations, sharing the same $u_t$ but differing in challenges, is enough to compute the discrete log.\\
+
+\noindent
+$\alpha_{t,2} = a\cdot\alpha_{t,1}+b$ is enough to get rid of the unknown $\alpha_{t,1}$ algebraically, replacing the rewind with a direct sub.
+\end{solution}
+
+\end{document}
+
+
